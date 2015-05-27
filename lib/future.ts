@@ -1,9 +1,9 @@
 import Promise = require('mpromise');
-import IFutureFunction = require('./function');
-import IFutureCallback = require('./callback');
-import IFutureSuccessCallback = require('./success-callback');
-import IFutureFailureCallback = require('./failure-callback');
-import IFutureCompleteCallback = require('./complete-callback');
+import IFutureFunction = require('./interface/function');
+import IFutureCallback = require('./interface/callback');
+import IFutureSuccessCallback = require('./interface/success-callback');
+import IFutureFailureCallback = require('./interface/failure-callback');
+import IFutureCompleteCallback = require('./interface/complete-callback');
 
 function rejectOnError<T>(promise: Promise<T, Error>, callback: () => void) {
   try  {
