@@ -1,0 +1,20 @@
+{
+  "name": "sfuture.ts",
+  "version": "0.0.1",
+  "description": "TypeScript port of Scala Future",
+  "author": "Seulgi Kim <dev@seulgi.kim>",
+  "contributors": [
+    {
+      "name": "Seulgi Kim",
+      "email": "dev@seulgi.kim"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sgkim126/sfuture.ts/"
+  },
+  "bugs": {
+    "url": "https://github.com/sgkim126/sfuture.ts/issues"
+  },
+  "license": "MIT License"
+}
