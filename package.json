@@ -1,5 +1,5 @@
 {
-  "name": "sfuture.ts",
+  "name": "sfuture",
   "version": "0.0.1",
   "description": "TypeScript port of Scala Future",
   "author": "Seulgi Kim <dev@seulgi.kim>",
