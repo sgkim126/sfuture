@@ -20,7 +20,7 @@ interface IFutureCompleteCallback<T> {
   (result: Error | T, isSuccess: boolean): void;
 }
 
-function rejectOnError<T>(promise: Promise<T>, callback: () => void) {
+function rejectOnError<T>(promise: Promise<T, Error>, callback: () => void) {
   try  {
     callback();
   } catch (ex) {
@@ -29,9 +29,9 @@ function rejectOnError<T>(promise: Promise<T>, callback: () => void) {
 }
 
 class Future<T> {
-  private promise: Promise<T>
+  private promise: Promise<T, Error>
 
-  constructor(promise: Promise<T>) {
+  constructor(promise: Promise<T, Error>) {
     this.promise = promise;
   }
 
@@ -52,21 +52,21 @@ class Future<T> {
   }
 
   static successful<T>(result: T): Future<T> {
-    let newPromise = new Promise<T>();
+    let newPromise = new Promise<T, Error>();
     newPromise.fulfill(result);
 
     return new Future<T>(newPromise);
   }
 
   static failed<T>(err: Error): Future<T> {
-    let newPromise = new Promise<T>();
+    let newPromise = new Promise<T, Error>();
     newPromise.reject(err);
 
     return new Future<T>(newPromise);
   }
 
   static create<T>(fn: IFutureFunction<T>): Future<T> {
-    let newPromise = new Promise<T>();
+    let newPromise = new Promise<T, Error>();
     setTimeout(function () {
       rejectOnError(newPromise, function () {
         let result = fn();
@@ -77,7 +77,7 @@ class Future<T> {
   }
 
   static denodify<T>(fn: Function, thisArg: any, ...args: any[]): Future<T> {
-    let newPromise = new Promise<T>();
+    let newPromise = new Promise<T, Error>();
     args.push((err: Error, result: T) => {
       if (err) {
         newPromise.reject(err);
@@ -115,7 +115,7 @@ class Future<T> {
   }
 
   map<U>(mapping: (org: T) => U): Future<U> {
-    let newPromise = new Promise<U>();
+    let newPromise = new Promise<U, Error>();
 
     this.promise.onResolve(function (err: Error, result: T) {
       if (err) {
@@ -132,7 +132,7 @@ class Future<T> {
   }
 
   flatMap<U>(futuredMapping: (org: T) => Future<U>): Future<U> {
-    let newPromise = new Promise<U>();
+    let newPromise = new Promise<U, Error>();
 
     this.promise.onResolve(function (err: Error, result: T) {
       if (err) {
@@ -156,7 +156,7 @@ class Future<T> {
   }
 
   filter(filterFunction: (value: T) => boolean): Future<T> {
-    let newPromise = new Promise<T>();
+    let newPromise = new Promise<T, Error>();
 
     this.promise.onResolve(function (err: Error, result: T) {
       if (err) {
@@ -177,7 +177,7 @@ class Future<T> {
   }
 
   recover(recoverFunction: (err: Error) => T): Future<T> {
-    let newPromise = new Promise<T>();
+    let newPromise = new Promise<T, Error>();
 
     this.promise.onResolve(function (err: Error, result: T) {
       if (err) {
@@ -194,7 +194,7 @@ class Future<T> {
   }
 
   transform<U>(transformFunction: (err: Error, result: T) => (U|Error)): Future<U> {
-    let newPromise = new Promise<U>();
+    let newPromise = new Promise<U, Error>();
 
     this.promise.onResolve(function (err: Error, result: T) {
       rejectOnError(newPromise, function () {
@@ -212,7 +212,7 @@ class Future<T> {
   }
 
   andThen(callback: IFutureCallback<T>) {
-    let newPromise = new Promise<T>();
+    let newPromise = new Promise<T, Error>();
     newPromise.onResolve(callback);
 
     this.promise.chain(newPromise);
