@@ -30,5 +30,6 @@
   "scripts": {
     "test": "gulp"
   },
-  "license": "MIT License"
+  "license": "MIT License",
+  "keywords": [ "future", "promise", "scala", "control flow" ]
 }
