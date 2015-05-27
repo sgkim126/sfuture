@@ -17,15 +17,15 @@
     "url": "https://github.com/sgkim126/sfuture.ts/issues"
   },
   "dependencies": {
-    "mpromise": "latest"
+    "gulp": "latest",
+    "gulp-typescript": "latest",
+    "mpromise": "latest",
+    "typescript": "latest"
   },
   "devDependencies": {
-    "gulp": "latest",
     "gulp-istanbul": "latest",
     "gulp-mocha": "latest",
-    "gulp-tslint": "latest",
-    "gulp-typescript": "latest",
-    "typescript": "latest"
+    "gulp-tslint": "latest"
   },
   "scripts": {
     "test": "gulp"
