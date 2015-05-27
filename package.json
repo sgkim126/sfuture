@@ -1,6 +1,6 @@
 {
   "name": "sfuture",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "TypeScript port of Scala Future",
   "author": "Seulgi Kim <dev@seulgi.kim>",
   "contributors": [
@@ -16,6 +16,7 @@
   "bugs": {
     "url": "https://github.com/sgkim126/sfuture.ts/issues"
   },
+  "main": "./lib/future.js",
   "dependencies": {
     "gulp": "latest",
     "gulp-typescript": "latest",
@@ -28,7 +29,8 @@
     "gulp-tslint": "latest"
   },
   "scripts": {
-    "test": "gulp"
+    "test": "gulp",
+    "postinstall": "gulp build"
   },
   "license": "MIT License",
   "keywords": [ "future", "promise", "scala", "control flow" ]
