@@ -14,7 +14,7 @@ function rejectOnError<T>(promise: Promise<T, Error>, callback: () => void) {
 }
 
 class Future<T> {
-  private promise: Promise<T, Error>
+  private promise: Promise<T, Error>;
 
   constructor(promise: Promise<T, Error>) {
     this.promise = promise;
@@ -52,12 +52,14 @@ class Future<T> {
 
   static create<T>(fn: IFutureFunction<T>): Future<T> {
     let newPromise = new Promise<T, Error>();
-    setTimeout(function () {
-      rejectOnError(newPromise, function () {
-        let result = fn();
-        newPromise.fulfill(result);
-      });
-    }, 0);
+    setTimeout(
+      function () {
+        rejectOnError(newPromise, function () {
+          let result = fn();
+          newPromise.fulfill(result);
+        });
+      },
+      0);
     return new Future<T>(newPromise);
   }
 
