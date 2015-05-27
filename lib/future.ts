@@ -50,7 +50,7 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  static create<T>(fn: IFutureFunction<T>): Future<T> {
+  static create<T>(fn: IFutureFunction<T, Error>): Future<T> {
     let newPromise = new Promise<T, Error>();
     setTimeout(
       function () {
@@ -79,7 +79,7 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  onComplete(callback: IFutureCompleteCallback<T>) {
+  onComplete(callback: IFutureCompleteCallback<T, Error>) {
     this.promise.onResolve(function (err: Error, result: T) {
       if (err) {
         callback(err, false);
@@ -91,12 +91,12 @@ class Future<T> {
     return this;
   }
 
-  onSuccess(callback: IFutureSuccessCallback<T>) {
+  onSuccess(callback: IFutureSuccessCallback<T, Error>) {
     this.promise.onFulfill(callback);
     return this;
   }
 
-  onFailure(callback: IFutureFailureCallback) {
+  onFailure(callback: IFutureFailureCallback<Error>) {
     this.promise.onReject(callback);
     return this;
   }
@@ -198,7 +198,7 @@ class Future<T> {
     return new Future<U>(newPromise);
   }
 
-  andThen(callback: IFutureCallback<T>) {
+  andThen(callback: IFutureCallback<T, Error>) {
     let newPromise = new Promise<T, Error>();
     newPromise.onResolve(callback);
 

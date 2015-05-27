@@ -1,5 +1,5 @@
-interface IFutureCompleteCallback<T> {
-  (result: Error | T, isSuccess: boolean): void;
+interface IFutureCompleteCallback<F, R> {
+  (result: R | F, isSuccess: boolean): void;
 }
 
 export = IFutureCompleteCallback;

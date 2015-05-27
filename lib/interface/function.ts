@@ -1,5 +1,5 @@
-interface IFutureFunction<T> {
-  (): T;
+interface IFutureFunction<F, R> {
+  (): F;
 }
 
 export = IFutureFunction;

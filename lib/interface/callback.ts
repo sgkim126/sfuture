@@ -1,5 +1,5 @@
-interface IFutureCallback<T> {
-  (err?: Error, result?: T): void;
+interface IFutureCallback<F, R> {
+  (err?: R, result?: F): void;
 }
 
 export = IFutureCallback;

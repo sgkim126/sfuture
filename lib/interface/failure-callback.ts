@@ -1,5 +1,5 @@
-interface IFutureFailureCallback {
-  (err: Error): void;
+interface IFutureFailureCallback<R> {
+  (err: R): void;
 }
 
 export = IFutureFailureCallback;
