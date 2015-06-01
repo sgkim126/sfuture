@@ -82,11 +82,11 @@ class Future<T> {
   onComplete(callback: IFutureCompleteCallback<T, Error>) {
     this.promise.onResolve(function (err: Error, result: T) {
       if (err) {
-        callback(err, false);
+        callback(false, err);
         return;
       }
 
-      callback(result, true);
+      callback(true, result);
     });
     return this;
   }
@@ -129,7 +129,7 @@ class Future<T> {
 
       rejectOnError(newPromise, function () {
         futuredMapping(result)
-        .onComplete(function (result: Error | U, isSuccess: boolean) {
+        .onComplete(function (isSuccess: boolean, result: Error | U) {
           if (isSuccess) {
             newPromise.fulfill(<U>result);
           } else {
