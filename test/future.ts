@@ -60,18 +60,18 @@ describe('Future', function () {
   describe('#onComplete', function () {
     it('registers a success callback.', function (done: MochaDone) {
       let future = Future.successful(10);
-      future.onComplete(function (isSuccess, result) {
+      future.onComplete((err: Error, result: number) => {
+        assert.ifError(err);
         assert.equal(result, 10);
-        assert.equal(isSuccess, true);
         done();
       });
     });
 
     it('registers a failure callback.', function (done: MochaDone) {
       let future = Future.failed(new Error('hello, error!'));
-      future.onComplete(function (isSuccess: boolean, err: Error) {
+      future.onComplete((err: Error) => {
+        assert(err);
         assert.equal(err.message, 'hello, error!');
-        assert.equal(isSuccess, false);
         done();
       });
     });
@@ -312,10 +312,10 @@ describe('Future', function () {
         assert.equal(null, err);
         assert.equal(11, sequence);
         sequence += 100;
-      }).onComplete((isSuccess: boolean, resultOrError: number | Error) => {
-        assert(isSuccess);
+      }).onComplete((err: Error, result: number) => {
+        assert.ifError(err);
 
-        assert.equal(<number>resultOrError, 100);
+        assert.equal(result, 100);
         assert.equal(sequence, 111);
         done();
       });

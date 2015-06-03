@@ -3,7 +3,6 @@ import IFutureFunction = require('./interface/function');
 import IFutureCallback = require('./interface/callback');
 import IFutureSuccessCallback = require('./interface/success-callback');
 import IFutureFailureCallback = require('./interface/failure-callback');
-import IFutureCompleteCallback = require('./interface/complete-callback');
 
 function rejectOnError<T>(promise: Promise<T, Error>, callback: () => void) {
   try  {
@@ -79,15 +78,8 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  onComplete(callback: IFutureCompleteCallback<T, Error>) {
-    this.promise.onResolve(function (err: Error, result: T) {
-      if (err) {
-        callback(false, err);
-        return;
-      }
-
-      callback(true, result);
-    });
+  onComplete(callback: IFutureCallback<T, Error>) {
+    this.promise.onResolve(callback);
     return this;
   }
 
@@ -129,12 +121,8 @@ class Future<T> {
 
       rejectOnError(newPromise, function () {
         futuredMapping(result)
-        .onComplete(function (isSuccess: boolean, result: Error | U) {
-          if (isSuccess) {
-            newPromise.fulfill(<U>result);
-          } else {
-            newPromise.reject(<Error>result);
-          }
+        .onComplete((err: Error, result: U) => {
+          newPromise.resolve(err, result);
         });
       });
     });
