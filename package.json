@@ -11,10 +11,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/sgkim126/sfuture.ts/"
+    "url": "https://github.com/sgkim126/sfuture/"
   },
   "bugs": {
-    "url": "https://github.com/sgkim126/sfuture.ts/issues"
+    "url": "https://github.com/sgkim126/sfuture/issues"
   },
   "main": "./lib/future.js",
   "dependencies": {
