@@ -339,16 +339,11 @@ describe('Future', function () {
       });
     });
 
-    it('.', function (done: MochaDone) {
+    it('Future.sequence(empty array) returns empty array', function (done: MochaDone) {
       let future: Future<any[]> = Future.sequence([
-        Future.successful(10),
-        Future.successful('hello'),
-        Future.successful(20)
       ]);
-      future.onSuccess(function (results) {
-        assert.equal(results[0], 10);
-        assert.equal(results[1], 'hello');
-        assert.equal(results[2], 20);
+      future.map(function (results) {
+        assert.equal(results.length, 0);
         done();
       }).onFailure(function (err: Error) {
         done(new Error('Must not reached here.'));
