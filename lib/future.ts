@@ -25,10 +25,13 @@ class Future<T> {
         return Future.successful(result);
       }
 
+      futures = futures.slice(0);
+      result = result.slice(0);
       let future: Future<T> = futures.shift();
 
       return future.flatMap(function (value: T): Future<any[]> {
-        return makeSequence(futures, result.concat(value));
+        result.push(value);
+        return makeSequence(futures, result);
       });
     };
 

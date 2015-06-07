@@ -350,6 +350,23 @@ describe('Future', function () {
       });
     });
 
+    it('Future.sequence(Future<any[]>) returns Future<any[][]>', function (done: MochaDone) {
+      let f1 = Future.successful([1, 2]);
+      let f2 = Future.successful([3]);
+      let f3 = Future.successful([4, 5, 6]);
+      let future: Future<any[]> = Future.sequence([
+        f1, f2, f3
+      ]);
+
+      future.map(function (results) {
+        assert.deepEqual(results, [ [ 1, 2 ], [ 3 ], [ 4, 5, 6 ] ]);
+        done();
+      }).onFailure(function (err: Error) {
+        done(err);
+      });
+    });
+
+
     it('throws an error when any of futures has failed.', function (done: MochaDone) {
       let future: Future<any[]> = Future.sequence([
         Future.failed(new Error('hello, error!')),
