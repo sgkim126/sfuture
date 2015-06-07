@@ -324,11 +324,27 @@ describe('Future', function () {
 
   describe('#sequence', function () {
     it('collects futures and returns a new future of their results.', function (done: MochaDone) {
-      let future: Future<any[]> = Future.sequence(
+      let future: Future<any[]> = Future.sequence([
         Future.successful(10),
         Future.successful('hello'),
         Future.successful(20)
-      );
+      ]);
+      future.onSuccess(function (results) {
+        assert.equal(results[0], 10);
+        assert.equal(results[1], 'hello');
+        assert.equal(results[2], 20);
+        done();
+      }).onFailure(function (err: Error) {
+        done(new Error('Must not reached here.'));
+      });
+    });
+
+    it('.', function (done: MochaDone) {
+      let future: Future<any[]> = Future.sequence([
+        Future.successful(10),
+        Future.successful('hello'),
+        Future.successful(20)
+      ]);
       future.onSuccess(function (results) {
         assert.equal(results[0], 10);
         assert.equal(results[1], 'hello');
@@ -340,11 +356,11 @@ describe('Future', function () {
     });
 
     it('throws an error when any of futures has failed.', function (done: MochaDone) {
-      let future: Future<any[]> = Future.sequence(
+      let future: Future<any[]> = Future.sequence([
         Future.failed(new Error('hello, error!')),
         Future.successful(10),
         Future.successful('hello')
-      );
+      ]);
       future.onFailure(function (err) {
         assert.equal(err.message, 'hello, error!');
         done();

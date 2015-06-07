@@ -19,7 +19,7 @@ class Future<T> {
     this.promise = promise;
   }
 
-  static sequence(...futures: Future<any>[]): Future<any[]> {
+  static sequence(futures: Future<any>[]): Future<any[]> {
     let makeSequence = function <T>(futures: Future<any>[], result: any[]): Future<any[]> {
       if (futures.length === 0) {
         return Future.successful(result);
