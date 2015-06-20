@@ -98,6 +98,10 @@ class Future<T> {
     });
   }
 
+  static traverse<T, R>(args: T[], fn: (arg: T) => Future<R>): Future<R[]> {
+    return Future.sequence(args.map(fn));
+  }
+
   static denodify<T>(fn: Function, thisArg: any, ...args: any[]): Future<T> {
     let newPromise = new Promise<T, Error>();
     args.push((err: Error, result: T) => {
