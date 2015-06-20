@@ -1,4 +1,5 @@
 import Promise = require('mpromise');
+import util = require('util');
 import IFutureFunction = require('./interface/function');
 import IFutureCallback = require('./interface/callback');
 import IFutureSuccessCallback = require('./interface/success-callback');
@@ -189,6 +190,17 @@ class Future<T> {
     });
 
     return new Future<T>(newPromise);
+  }
+
+  collect<S>(pf: (value: T) => S): Future<S> {
+    return this.map((value: T): S => {
+      let result: S = pf(value);
+      if (result === undefined) {
+        throw new Error(util.format('Future.collect partial function is not defined at: %j', value));
+      }
+
+      return result;
+    });
   }
 
   recover(recoverFunction: (err: Error) => T): Future<T> {
