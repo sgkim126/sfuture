@@ -68,13 +68,8 @@ class Future<T> {
   static firstCompletedOf<T>(futures: Future<T>[]): Future<T> {
     let newPromise = new Promise<T, Error>();
 
-    let completed = false;
     futures.map((future: Future<T>) => {
       future.onComplete((err: Error, result: T) => {
-        if (completed) {
-          return;
-        }
-
         newPromise.resolve(err, result);
       });
     });

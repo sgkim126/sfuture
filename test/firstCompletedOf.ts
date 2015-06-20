@@ -39,6 +39,31 @@ describe('#firstCompletedOf', () => {
     }).nodify(done);
   });
 
+  it('does not change the result even other futures are completed', (done: MochaDone) => {
+    let p1 = new Promise<number, Error>();
+    let p2 = new Promise<number, Error>();
+    let p3 = new Promise<number, Error>();
+
+    let f1 = new Future(p1);
+    let f2 = new Future(p2);
+    let f3 = new Future(p3);
+
+    setTimeout(() => { p1.fulfill(1); }, 30);
+    setTimeout(() => { p2.reject(new Error('rejected')); }, 20);
+    setTimeout(() => { p3.fulfill(3); }, 10);
+
+    let futures = [ f1, f2, f3 ];
+
+    let f4 = Future.firstCompletedOf(futures);
+
+    Future.sequence(futures)
+    .onComplete(() => {
+      f4.map((result: number) => {
+        assert.equal(result, 3);
+      }).nodify(done);
+    });
+  });
+
   it('firstCompletedOf returns failed future when the first completed future is failed', (done: MochaDone) => {
     let p1 = new Promise<number, Error>();
     let p2 = new Promise<number, Error>();
