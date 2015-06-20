@@ -3,7 +3,7 @@
 /.travis.yml
 /.tslintrc.json
 /coverage/
-/gulp*.js
+/gulpfile.js
 /lib.d/
 /lib/**/*.ts
 /lib/interface/
