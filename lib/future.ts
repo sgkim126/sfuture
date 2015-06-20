@@ -84,6 +84,20 @@ class Future<T> {
     });
   }
 
+  static reduce<T>(futures: Future<T>[], op: (base: T, result: T) => T): Future<T> {
+    if (futures.length === 0) {
+      return Future.failed(new Error('reduce attempted on empty collection'));
+    }
+
+    return Future.sequence(futures)
+    .map((results: T[]) => {
+      let remains = results.slice(0);
+      let first = remains.shift();
+
+      return remains.reduce(op, first);
+    });
+  }
+
   static denodify<T>(fn: Function, thisArg: any, ...args: any[]): Future<T> {
     let newPromise = new Promise<T, Error>();
     args.push((err: Error, result: T) => {
