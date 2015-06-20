@@ -1,4 +1,11 @@
 /.gitignore
-/gulplint.js
-/gulptest.js
+/.npmignore
+/.travis.yml
+/.tslintrc.json
+/coverage/
+/gulp*.js
+/lib.d/
+/lib/**/*.ts
+/lib/interface/
+/node_modules/
 /test/
