@@ -65,6 +65,23 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
+  static firstCompletedOf<T>(futures: Future<T>[]): Future<T> {
+    let newPromise = new Promise<T, Error>();
+
+    let completed = false;
+    futures.map((future: Future<T>) => {
+      future.onComplete((err: Error, result: T) => {
+        if (completed) {
+          return;
+        }
+
+        newPromise.resolve(err, result);
+      });
+    });
+
+    return new Future<T>(newPromise);
+  }
+
   static denodify<T>(fn: Function, thisArg: any, ...args: any[]): Future<T> {
     let newPromise = new Promise<T, Error>();
     args.push((err: Error, result: T) => {
@@ -197,8 +214,6 @@ class Future<T> {
 
     return new Future<T>(this.promise);
   }
-
-  // TODO: firstCompletedOf(...futures: Future<any>[]): Future<any> Currently, no idea how to implement it.
 
   nodify(callback: (err: Error, result: T) => void) {
     this.promise.onResolve(callback);
