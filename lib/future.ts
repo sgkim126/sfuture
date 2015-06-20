@@ -82,6 +82,13 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
+  static fold<T, R>(futures: Future<T>[], base: R, op: (base: R, result: T) => R): Future<R> {
+    return Future.sequence(futures)
+    .map((results: T[]) => {
+      return results.reduce(op, base);
+    });
+  }
+
   static denodify<T>(fn: Function, thisArg: any, ...args: any[]): Future<T> {
     let newPromise = new Promise<T, Error>();
     args.push((err: Error, result: T) => {
