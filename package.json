@@ -32,6 +32,6 @@
     "test": "gulp",
     "prepublish": "gulp build"
   },
-  "license": "MIT License",
+  "license": "MIT",
   "keywords": [ "future", "promise", "scala", "control flow" ]
 }
