@@ -220,6 +220,10 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
+  foreach<U>(f: (result: T) => U): void {
+    this.onSuccess(f);
+  }
+
   transform<U>(transformFunction: (err: Error, result: T) => (U|Error)): Future<U> {
     let newPromise = new Promise<U, Error>();
 
