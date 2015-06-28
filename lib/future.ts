@@ -49,8 +49,8 @@ class Future<T> {
   }
 
 
-  static sequence(futures: Future<any>[]): Future<any[]> {
-    let makeSequence = <T>(futures: Future<any>[], result: any[]): Future<any[]> => {
+  static sequence<T>(futures: Future<T>[]): Future<T[]> {
+    let makeSequence = <T>(futures: Future<T>[], result: T[]): Future<T[]> => {
       if (futures.length === 0) {
         return Future.successful(result);
       }
@@ -59,7 +59,7 @@ class Future<T> {
       result = result.slice(0);
       let future: Future<T> = futures.shift();
 
-      return future.flatMap((value: T): Future<any[]> => {
+      return future.flatMap((value: T): Future<T[]> => {
         result.push(value);
         return makeSequence(futures, result);
       });
@@ -297,7 +297,7 @@ class Future<T> {
   }
 
   zip<U>(future: Future<U>): Future<any[]> {
-    return Future.sequence([ this, future ]);
+    return Future.sequence<any>([ this, future ]);
   }
 
   fallbackTo(future: Future<T>): Future<T> {

@@ -3,7 +3,7 @@ import Future = require('../lib/future');
 
 describe('#sequence', () => {
   it('collects futures and returns a new future of their results.', (done: MochaDone) => {
-    let future: Future<any[]> = Future.sequence([
+    let future: Future<any[]> = Future.sequence<any>([
       Future.successful(10),
       Future.successful('hello'),
       Future.successful(20)
