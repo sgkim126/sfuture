@@ -35,7 +35,7 @@ class Future<T> {
   }
 
 
-  static create<T>(fn: IFutureFunction<T, Error>): Future<T> {
+  static apply<T>(fn: IFutureFunction<T, Error>): Future<T> {
     let newPromise = new Promise<T, Error>();
     setTimeout(
       () => {

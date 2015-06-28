@@ -3,14 +3,14 @@ import Future = require('../lib/future');
 
 describe('Future', () => {
   it('returns a Future object with a callback', () => {
-    let future = Future.create(() => {
+    let future = Future.apply(() => {
       return;
     });
     assert.equal(future.constructor, Future);
   });
 
   it('returns a successful Future object with return value', (done: MochaDone) => {
-    let future = Future.create(() => {
+    let future = Future.apply(() => {
       return 10;
     });
     assert.equal(future.constructor, Future);
@@ -23,7 +23,7 @@ describe('Future', () => {
   });
 
   it('returns a failed Future object when callback throws error', (done: MochaDone) => {
-    let future = Future.create(() => {
+    let future = Future.apply(() => {
       throw new Error('error');
     });
     assert.equal(future.constructor, Future);
