@@ -238,6 +238,20 @@ class Future<T> {
     return new Future<U>(newPromise);
   }
 
+  fallbackTo(future: Future<T>): Future<T> {
+    let newPromise = new Promise<T, Error>();
+
+    this.onSuccess((result: T) => {
+      newPromise.fulfill(result);
+    }).onFailure((err: Error) => {
+      future.onComplete((err: Error, result: T) => {
+        newPromise.resolve(err, result);
+      });
+    });
+
+    return new Future<T>(newPromise);
+  }
+
   andThen(callback: IFutureCallback<T, Error>) {
     let newPromise = new Promise<T, Error>();
     newPromise.onResolve(callback);
