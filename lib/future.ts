@@ -34,6 +34,13 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
+  static fromTry<T>(err: Error, result: T): Future<T> {
+    let newPromise = new Promise<T, Error>();
+    newPromise.resolve(err, result);
+
+    return new Future<T>(newPromise);
+  }
+
 
   static apply<T>(fn: IFutureFunction<T, Error>): Future<T> {
     let newPromise = new Promise<T, Error>();
