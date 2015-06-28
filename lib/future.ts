@@ -220,6 +220,26 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
+  recoverWith(recoverFunction: (err: Error) => Future<T>): Future<T> {
+    let newPromise = new Promise<T, Error>();
+
+    this.promise.onResolve((err: Error, result: T) => {
+      if (err) {
+        rejectOnError(newPromise, () => {
+          recoverFunction(err)
+          .onComplete((err: Error, result: T) => {
+            newPromise.resolve(err, result);
+          });
+        });
+        return;
+      }
+
+      newPromise.fulfill(result);
+    });
+
+    return new Future<T>(newPromise);
+  }
+
   foreach<U>(f: (result: T) => U): void {
     this.onSuccess(f);
   }
