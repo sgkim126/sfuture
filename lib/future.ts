@@ -20,6 +20,35 @@ class Future<T> {
     this.promise = promise;
   }
 
+  static failed<T>(err: Error): Future<T> {
+    let newPromise = new Promise<T, Error>();
+    newPromise.reject(err);
+
+    return new Future<T>(newPromise);
+  }
+
+  static successful<T>(result: T): Future<T> {
+    let newPromise = new Promise<T, Error>();
+    newPromise.fulfill(result);
+
+    return new Future<T>(newPromise);
+  }
+
+
+  static create<T>(fn: IFutureFunction<T, Error>): Future<T> {
+    let newPromise = new Promise<T, Error>();
+    setTimeout(
+      function () {
+        rejectOnError(newPromise, function () {
+          let result = fn();
+          newPromise.fulfill(result);
+        });
+      },
+      0);
+    return new Future<T>(newPromise);
+  }
+
+
   static sequence(futures: Future<any>[]): Future<any[]> {
     let makeSequence = function <T>(futures: Future<any>[], result: any[]): Future<any[]> {
       if (futures.length === 0) {
@@ -37,33 +66,6 @@ class Future<T> {
     };
 
     return makeSequence(futures, []);
-  }
-
-  static successful<T>(result: T): Future<T> {
-    let newPromise = new Promise<T, Error>();
-    newPromise.fulfill(result);
-
-    return new Future<T>(newPromise);
-  }
-
-  static failed<T>(err: Error): Future<T> {
-    let newPromise = new Promise<T, Error>();
-    newPromise.reject(err);
-
-    return new Future<T>(newPromise);
-  }
-
-  static create<T>(fn: IFutureFunction<T, Error>): Future<T> {
-    let newPromise = new Promise<T, Error>();
-    setTimeout(
-      function () {
-        rejectOnError(newPromise, function () {
-          let result = fn();
-          newPromise.fulfill(result);
-        });
-      },
-      0);
-    return new Future<T>(newPromise);
   }
 
   static firstCompletedOf<T>(futures: Future<T>[]): Future<T> {
@@ -150,11 +152,6 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  onComplete(callback: IFutureCallback<T, Error>) {
-    this.promise.onResolve(callback);
-    return this;
-  }
-
   onSuccess(callback: IFutureSuccessCallback<T, Error>) {
     this.promise.onFulfill(callback);
     return this;
@@ -163,6 +160,34 @@ class Future<T> {
   onFailure(callback: IFutureFailureCallback<Error>) {
     this.promise.onReject(callback);
     return this;
+  }
+
+  onComplete(callback: IFutureCallback<T, Error>) {
+    this.promise.onResolve(callback);
+    return this;
+  }
+
+
+  foreach<U>(f: (result: T) => U): void {
+    this.onSuccess(f);
+  }
+
+  transform<U>(transformFunction: (err: Error, result: T) => (U|Error)): Future<U> {
+    let newPromise = new Promise<U, Error>();
+
+    this.promise.onResolve(function (err: Error, result: T) {
+      rejectOnError(newPromise, function () {
+        let newValue: (U|Error) = transformFunction(err, result);
+        if (err) {
+          newPromise.reject(<Error>newValue);
+          return;
+        }
+
+        newPromise.fulfill(<U>newValue);
+      });
+    });
+
+    return new Future<U>(newPromise);
   }
 
   map<U>(mapping: (org: T) => U): Future<U> {
@@ -275,28 +300,6 @@ class Future<T> {
     return Future.sequence([ this, future ]);
   }
 
-  foreach<U>(f: (result: T) => U): void {
-    this.onSuccess(f);
-  }
-
-  transform<U>(transformFunction: (err: Error, result: T) => (U|Error)): Future<U> {
-    let newPromise = new Promise<U, Error>();
-
-    this.promise.onResolve(function (err: Error, result: T) {
-      rejectOnError(newPromise, function () {
-        let newValue: (U|Error) = transformFunction(err, result);
-        if (err) {
-          newPromise.reject(<Error>newValue);
-          return;
-        }
-
-        newPromise.fulfill(<U>newValue);
-      });
-    });
-
-    return new Future<U>(newPromise);
-  }
-
   fallbackTo(future: Future<T>): Future<T> {
     let newPromise = new Promise<T, Error>();
 
@@ -320,10 +323,10 @@ class Future<T> {
     return new Future<T>(this.promise);
   }
 
+
   nodify(callback: (err: Error, result: T) => void) {
     this.promise.onResolve(callback);
   }
-
 }
 
 export = Future;
