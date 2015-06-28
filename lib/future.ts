@@ -240,6 +240,10 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
+  zip<U>(future: Future<U>): Future<any[]> {
+    return Future.sequence([ this, future ]);
+  }
+
   foreach<U>(f: (result: T) => U): void {
     this.onSuccess(f);
   }
