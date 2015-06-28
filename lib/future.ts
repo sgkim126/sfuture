@@ -255,6 +255,11 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
+  withFilter(filterFunction: (value: T) => boolean): Future<T> {
+    return this.filter(filterFunction);
+  }
+
+
   collect<S>(pf: (value: T) => S): Future<S> {
     return this.map((value: T): S => {
       let result: S = pf(value);
