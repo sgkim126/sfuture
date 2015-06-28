@@ -78,6 +78,37 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
+  static find<T>(futures: Future<T>[], predicate: (value: T) => boolean): Future<T> {
+    let count = futures.length;
+
+    if (count === 0) {
+      return Future.successful(null);
+    }
+
+    let newPromise = new Promise<T, Error>();
+
+    let search = (err: Error, result: T): void => {
+      count -= 1;
+      if (!err) {
+        if (predicate(result)) {
+          newPromise.fulfill(result);
+          return;
+        }
+      }
+
+      if (count === 0) {
+        newPromise.fulfill(null);
+        return;
+      }
+    };
+
+    futures.map((future: Future<T>) => {
+      future.onComplete(search);
+    });
+
+    return new Future(newPromise);
+  }
+
   static fold<T, R>(futures: Future<T>[], base: R, op: (base: R, result: T) => R): Future<R> {
     return Future.sequence(futures)
     .map((results: T[]) => {
