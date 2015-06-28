@@ -1,10 +1,10 @@
 import assert = require('assert');
 import Future = require('../lib/future');
 
-describe('#denodifiy', function () {
+describe('#denodifiy', () => {
   let addPositive = (lhs: number, rhs: number, callback: (err: Error, result?: number) => void) => {
     setTimeout(
-      function () {
+      () => {
         if (lhs < 0) {
           callback(new Error('lhs'));
           return;

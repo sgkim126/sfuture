@@ -38,8 +38,8 @@ class Future<T> {
   static create<T>(fn: IFutureFunction<T, Error>): Future<T> {
     let newPromise = new Promise<T, Error>();
     setTimeout(
-      function () {
-        rejectOnError(newPromise, function () {
+      () => {
+        rejectOnError(newPromise, () => {
           let result = fn();
           newPromise.fulfill(result);
         });
@@ -50,7 +50,7 @@ class Future<T> {
 
 
   static sequence(futures: Future<any>[]): Future<any[]> {
-    let makeSequence = function <T>(futures: Future<any>[], result: any[]): Future<any[]> {
+    let makeSequence = <T>(futures: Future<any>[], result: any[]): Future<any[]> => {
       if (futures.length === 0) {
         return Future.successful(result);
       }
@@ -59,7 +59,7 @@ class Future<T> {
       result = result.slice(0);
       let future: Future<T> = futures.shift();
 
-      return future.flatMap(function (value: T): Future<any[]> {
+      return future.flatMap((value: T): Future<any[]> => {
         result.push(value);
         return makeSequence(futures, result);
       });
@@ -175,8 +175,8 @@ class Future<T> {
   transform<U>(transformFunction: (err: Error, result: T) => (U|Error)): Future<U> {
     let newPromise = new Promise<U, Error>();
 
-    this.promise.onResolve(function (err: Error, result: T) {
-      rejectOnError(newPromise, function () {
+    this.promise.onResolve((err: Error, result: T) => {
+      rejectOnError(newPromise, () => {
         let newValue: (U|Error) = transformFunction(err, result);
         if (err) {
           newPromise.reject(<Error>newValue);
@@ -193,13 +193,13 @@ class Future<T> {
   map<U>(mapping: (org: T) => U): Future<U> {
     let newPromise = new Promise<U, Error>();
 
-    this.promise.onResolve(function (err: Error, result: T) {
+    this.promise.onResolve((err: Error, result: T) => {
       if (err) {
         newPromise.reject(err);
         return;
       }
 
-      rejectOnError(newPromise, function () {
+      rejectOnError(newPromise, () => {
         newPromise.fulfill(mapping(result));
       });
     });
@@ -210,13 +210,13 @@ class Future<T> {
   flatMap<U>(futuredMapping: (org: T) => Future<U>): Future<U> {
     let newPromise = new Promise<U, Error>();
 
-    this.promise.onResolve(function (err: Error, result: T) {
+    this.promise.onResolve((err: Error, result: T) => {
       if (err) {
         newPromise.reject(err);
         return;
       }
 
-      rejectOnError(newPromise, function () {
+      rejectOnError(newPromise, () => {
         futuredMapping(result)
         .onComplete((err: Error, result: U) => {
           newPromise.resolve(err, result);
@@ -230,13 +230,13 @@ class Future<T> {
   filter(filterFunction: (value: T) => boolean): Future<T> {
     let newPromise = new Promise<T, Error>();
 
-    this.promise.onResolve(function (err: Error, result: T) {
+    this.promise.onResolve((err: Error, result: T) => {
       if (err) {
         newPromise.reject(err);
         return;
       }
 
-      rejectOnError(newPromise, function () {
+      rejectOnError(newPromise, () => {
         if (filterFunction(result)) {
           newPromise.fulfill(result);
         } else {
@@ -262,9 +262,9 @@ class Future<T> {
   recover(recoverFunction: (err: Error) => T): Future<T> {
     let newPromise = new Promise<T, Error>();
 
-    this.promise.onResolve(function (err: Error, result: T) {
+    this.promise.onResolve((err: Error, result: T) => {
       if (err) {
-        rejectOnError(newPromise, function () {
+        rejectOnError(newPromise, () => {
           newPromise.fulfill(recoverFunction(err));
         });
         return;

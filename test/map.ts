@@ -1,29 +1,29 @@
 import assert = require('assert');
 import Future = require('../lib/future');
 
-describe('#map', function () {
-  it('maps the result of a Future into another result.', function (done: MochaDone) {
+describe('#map', () => {
+  it('maps the result of a Future into another result.', (done: MochaDone) => {
     let future = Future.successful(10);
-    let mapedFuture = future.map(function (result: number) {
+    let mapedFuture = future.map((result: number) => {
       return result + ' times!';
     });
-    mapedFuture.onSuccess(function (result: string) {
+    mapedFuture.onSuccess((result: string) => {
       assert.equal(result, '10 times!');
       done();
-    }).onFailure(function (err: Error) {
+    }).onFailure((err: Error) => {
       done(new Error('Must not reached here.'));
     });
   });
 
-  it('throws error when the original future throws error.', function (done: MochaDone) {
+  it('throws error when the original future throws error.', (done: MochaDone) => {
     let future = Future.failed(new Error('hello, error!'));
-    let mapedFuture = future.map(function (result: number) {
+    let mapedFuture = future.map((result: number) => {
       return result + ' times!';
     });
-    mapedFuture.onFailure(function (err) {
+    mapedFuture.onFailure((err) => {
       assert.equal(err.message, 'hello, error!');
       done();
-    }).onSuccess(function (result) {
+    }).onSuccess((result) => {
       done(new Error('Must not reached here.'));
     });
   });

@@ -1,8 +1,8 @@
 import assert = require('assert');
 import Future = require('../lib/future');
 
-describe('#collect', function () {
-  it('returns the result that partial function is applied.', function (done: MochaDone) {
+describe('#collect', () => {
+  it('returns the result that partial function is applied.', (done: MochaDone) => {
     let future = Future.successful(-5);
     future.collect((value: number): any => {
       if (value < 0) {
@@ -13,7 +13,7 @@ describe('#collect', function () {
     }).nodify(done);
   });
 
-  it('returns the failed future if partial function returns undefined.', function (done: MochaDone) {
+  it('returns the failed future if partial function returns undefined.', (done: MochaDone) => {
     let future = Future.successful(-5);
     future.collect((value: number): any => {
       if (value > 0) {
@@ -26,7 +26,7 @@ describe('#collect', function () {
     });
   });
 
-  it('returns the failed future if partial function throws error.', function (done: MochaDone) {
+  it('returns the failed future if partial function throws error.', (done: MochaDone) => {
     let future = Future.successful(-5);
     future.collect((value: number): any => {
       throw new Error('no!!!!');

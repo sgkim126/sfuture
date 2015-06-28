@@ -1,57 +1,57 @@
 import assert = require('assert');
 import Future = require('../lib/future');
 
-describe('#flatMap', function () {
-  it('maps the result of a Future into another futured result.', function (done: MochaDone) {
+describe('#flatMap', () => {
+  it('maps the result of a Future into another futured result.', (done: MochaDone) => {
     let future = Future.successful(10);
-    let flatMappedFuture = future.flatMap(function (result: number) {
+    let flatMappedFuture = future.flatMap((result: number) => {
       let future = Future.successful(result + ' times!');
       return future;
     });
-    flatMappedFuture.onSuccess(function (result: string) {
+    flatMappedFuture.onSuccess((result: string) => {
       assert.equal(result, '10 times!');
       done();
-    }).onFailure(function (err: Error) {
+    }).onFailure((err: Error) => {
       done(new Error('Must not reached here.'));
     });
   });
 
-  it('throws error when the original future throws error.', function (done: MochaDone) {
+  it('throws error when the original future throws error.', (done: MochaDone) => {
     let future = Future.failed(new Error('hello, error!'));
-    let flatMappedFuture = future.flatMap(function (result: number) {
+    let flatMappedFuture = future.flatMap((result: number) => {
       let future = Future.successful(result + ' times!');
       return future;
     });
-    flatMappedFuture.onFailure(function (err) {
+    flatMappedFuture.onFailure((err) => {
       assert.equal(err.message, 'hello, error!');
       done();
-    }).onSuccess(function (result) {
+    }).onSuccess((result) => {
       done(new Error('Must not reached here.'));
     });
   });
 
-  it('throws error when a mapped future throws error.', function (done: MochaDone) {
+  it('throws error when a mapped future throws error.', (done: MochaDone) => {
     let future = Future.successful(10);
-    let flatMappedFuture = future.flatMap(function (result: number): Future<number> {
+    let flatMappedFuture = future.flatMap((result: number): Future<number> => {
       throw new Error('hello, error!');
     });
-    flatMappedFuture.onFailure(function (err) {
+    flatMappedFuture.onFailure((err) => {
       assert.equal(err.message, 'hello, error!');
       done();
-    }).onSuccess(function (result) {
+    }).onSuccess((result) => {
       done(new Error('Must not reached here.'));
     });
   });
 
   it('return failed future if callback returns failed future.', (done: MochaDone) => {
     let future = Future.successful(10);
-    let flatMappedFuture = future.flatMap(function (result: number): Future<number> {
+    let flatMappedFuture = future.flatMap((result: number): Future<number> => {
       return Future.failed(new Error('hello, error!'));
     });
-    flatMappedFuture.onFailure(function (err) {
+    flatMappedFuture.onFailure((err) => {
       assert.equal(err.message, 'hello, error!');
       done();
-    }).onSuccess(function (result) {
+    }).onSuccess((result) => {
       done(new Error('Must not reached here.'));
     });
   });

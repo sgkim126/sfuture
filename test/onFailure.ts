@@ -1,13 +1,13 @@
 import assert = require('assert');
 import Future = require('../lib/future');
 
-describe('#onFailure', function () {
-  it('registers a failure callback.', function (done: MochaDone) {
+describe('#onFailure', () => {
+  it('registers a failure callback.', (done: MochaDone) => {
     let future = Future.failed(new Error('hello, error!'));
-    future.onFailure(function (err) {
+    future.onFailure((err) => {
       assert.equal(err.message, 'hello, error!');
       done();
-    }).onSuccess(function (result) {
+    }).onSuccess((result) => {
       done(new Error('Must not reached here.'));
     });
   });

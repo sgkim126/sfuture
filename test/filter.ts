@@ -1,43 +1,43 @@
 import assert = require('assert');
 import Future = require('../lib/future');
 
-describe('#filter', function () {
-  it('filter returns the same error when it is already failed.', function <T>(done: MochaDone) {
+describe('#filter', () => {
+  it('filter returns the same error when it is already failed.', <T>(done: MochaDone) => {
     let future = Future.failed<T>(new Error('hello, error!'));
-    let filteredFuture = future.filter(function (result: T): boolean {
+    let filteredFuture = future.filter((result: T): boolean => {
       return true;
     });
 
-    filteredFuture.onFailure(function (err: Error) {
+    filteredFuture.onFailure((err: Error) => {
       assert.equal(err.message, 'hello, error!');
       done();
-    }).onSuccess(function (result: T) {
+    }).onSuccess((result: T) => {
       done(new Error('Must not reached here.'));
     });
   });
 
-  it('if filter function returns false, the result is failed future.', function (done: MochaDone) {
+  it('if filter function returns false, the result is failed future.', (done: MochaDone) => {
     let future = Future.successful(1);
-    let filteredFuture = future.filter(function (result: number): boolean {
+    let filteredFuture = future.filter((result: number): boolean => {
       return false;
     });
 
-    filteredFuture.onFailure(function (err: Error) {
+    filteredFuture.onFailure((err: Error) => {
       done();
-    }).onSuccess(function (result: number) {
+    }).onSuccess((result: number) => {
       done(new Error('Must not reached here.'));
     });
   });
 
-  it('if filter function returns true, the result is same as origianl future.', function (done: MochaDone) {
+  it('if filter function returns true, the result is same as origianl future.', (done: MochaDone) => {
     let future = Future.successful(1);
-    let filteredFuture = future.filter(function (result: number) {
+    let filteredFuture = future.filter((result: number) => {
       return true;
     });
 
-    filteredFuture.onFailure(function (err: Error) {
+    filteredFuture.onFailure((err: Error) => {
       done(new Error('Must not reached here.'));
-    }).onSuccess(function (result: number) {
+    }).onSuccess((result: number) => {
       assert.equal(result, 1);
       done();
     });

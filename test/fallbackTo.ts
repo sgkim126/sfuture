@@ -1,8 +1,8 @@
 import assert = require('assert');
 import Future = require('../lib/future');
 
-describe('#fallbackTo', function () {
-  it('does not affect on successful future.', function (done: MochaDone) {
+describe('#fallbackTo', () => {
+  it('does not affect on successful future.', (done: MochaDone) => {
     let future1 = Future.successful(100);
     let future2 = Future.successful(120);
     let future3 = future1.fallbackTo(future2);
@@ -12,7 +12,7 @@ describe('#fallbackTo', function () {
     }).nodify(done);
   });
 
-  it('recovers failed future.', function (done: MochaDone) {
+  it('recovers failed future.', (done: MochaDone) => {
     let future1 = Future.failed(new Error('a'));
     let future2 = Future.successful(120);
     let future3 = future1.fallbackTo(future2);
@@ -22,7 +22,7 @@ describe('#fallbackTo', function () {
     }).nodify(done);
   });
 
-  it('returns failed future if the given fails.', function (done: MochaDone) {
+  it('returns failed future if the given fails.', (done: MochaDone) => {
     let future1 = Future.failed(new Error('a'));
     let future2 = Future.failed(new Error('b'));
     let future3 = future1.fallbackTo(future2);

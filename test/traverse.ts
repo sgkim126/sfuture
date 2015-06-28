@@ -1,7 +1,7 @@
 import assert = require('assert');
 import Future = require('../lib/future');
 
-describe('#traverse', function () {
+describe('#traverse', () => {
   it('returns successful future on empty array', (done: MochaDone) => {
     Future.traverse<string, number>([], (arg: string): Future<number> => { return Future.successful(arg.length); })
     .map((results: number[]) => {

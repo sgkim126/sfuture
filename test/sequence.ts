@@ -1,35 +1,35 @@
 import assert = require('assert');
 import Future = require('../lib/future');
 
-describe('#sequence', function () {
-  it('collects futures and returns a new future of their results.', function (done: MochaDone) {
+describe('#sequence', () => {
+  it('collects futures and returns a new future of their results.', (done: MochaDone) => {
     let future: Future<any[]> = Future.sequence([
       Future.successful(10),
       Future.successful('hello'),
       Future.successful(20)
     ]);
-    future.onSuccess(function (results) {
+    future.onSuccess((results) => {
       assert.equal(results[0], 10);
       assert.equal(results[1], 'hello');
       assert.equal(results[2], 20);
       done();
-    }).onFailure(function (err: Error) {
+    }).onFailure((err: Error) => {
       done(new Error('Must not reached here.'));
     });
   });
 
-  it('Future.sequence(empty array) returns empty array', function (done: MochaDone) {
+  it('Future.sequence(empty array) returns empty array', (done: MochaDone) => {
     let future: Future<any[]> = Future.sequence([
     ]);
-    future.map(function (results) {
+    future.map((results) => {
       assert.equal(results.length, 0);
       done();
-    }).onFailure(function (err: Error) {
+    }).onFailure((err: Error) => {
       done(new Error('Must not reached here.'));
     });
   });
 
-  it('Future.sequence(Future<any[]>) returns Future<any[][]>', function (done: MochaDone) {
+  it('Future.sequence(Future<any[]>) returns Future<any[][]>', (done: MochaDone) => {
     let f1 = Future.successful([1, 2]);
     let f2 = Future.successful([3]);
     let f3 = Future.successful([4, 5, 6]);
@@ -37,25 +37,25 @@ describe('#sequence', function () {
       f1, f2, f3
     ]);
 
-    future.map(function (results) {
+    future.map((results) => {
       assert.deepEqual(results, [ [ 1, 2 ], [ 3 ], [ 4, 5, 6 ] ]);
       done();
-    }).onFailure(function (err: Error) {
+    }).onFailure((err: Error) => {
       done(err);
     });
   });
 
 
-  it('throws an error when any of futures has failed.', function (done: MochaDone) {
+  it('throws an error when any of futures has failed.', (done: MochaDone) => {
     let future: Future<any[]> = Future.sequence([
       Future.failed(new Error('hello, error!')),
       Future.successful(10),
       Future.successful('hello')
     ]);
-    future.onFailure(function (err) {
+    future.onFailure((err) => {
       assert.equal(err.message, 'hello, error!');
       done();
-    }).onSuccess(function (result) {
+    }).onSuccess((result) => {
       done(new Error('Must not reached here.'));
     });
   });
