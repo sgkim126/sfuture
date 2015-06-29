@@ -179,18 +179,19 @@ class Future<T> {
     this.onSuccess(f);
   }
 
-  transform<U>(transformFunction: (err: Error, result: T) => (U|Error)): Future<U> {
+  transform<U>(s: (value: T) => (U), f: (err: Error) => Error): Future<U> {
     let newPromise = new Promise<U, Error>();
 
     this.promise.onResolve((err: Error, result: T) => {
       rejectOnError(newPromise, () => {
-        let newValue: (U|Error) = transformFunction(err, result);
         if (err) {
-          newPromise.reject(<Error>newValue);
+          let newError = f(err);
+          newPromise.reject(newError);
           return;
         }
 
-        newPromise.fulfill(<U>newValue);
+        let newValue = s(result);
+        newPromise.fulfill(newValue);
       });
     });
 
