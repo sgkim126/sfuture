@@ -95,4 +95,46 @@ describe('#andThen', () => {
       assert.equal(sequence, 111);
     }).nodify(done);
   });
+
+  it('should keep the failed reason even the callback throws error.', (done: MochaDone) => {
+    let sequence = 0;
+    let future = Future.failed(new Error('error'));
+    future.andThen((err: Error, result: number) => {
+      assert.equal(err.message, 'error');
+      assert.equal(result, undefined);
+
+      assert.equal(sequence, 0);
+
+      sequence += 1;
+
+      throw new Error();
+    }).andThen((err: Error, result: number) => {
+      assert.equal(err.message, 'error');
+      assert.equal(result, undefined);
+
+      assert.equal(sequence, 1);
+
+      sequence += 10;
+
+      throw new Error();
+    }).andThen((err: Error, result: number) => {
+      assert.equal(err.message, 'error');
+      assert.equal(result, undefined);
+
+      assert.equal(sequence, 11);
+
+      sequence += 100;
+
+      throw new Error();
+    }).transform(
+      (result) => {
+        throw new Error('should fail');
+      },
+      (err) => {
+        assert.equal(err.message, 'error');
+
+        assert.equal(sequence, 111);
+      }
+    ).nodify(done);
+  });
 });
