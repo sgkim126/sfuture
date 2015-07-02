@@ -17,9 +17,6 @@
     "url": "https://github.com/sgkim126/sfuture/issues"
   },
   "main": "./lib/future.js",
-  "dependencies": {
-    "mpromise": "latest"
-  },
   "devDependencies": {
     "gulp": "latest",
     "gulp-istanbul": "latest",
