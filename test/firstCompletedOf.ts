@@ -5,12 +5,15 @@ describe('#firstCompletedOf', () => {
   it('firstCompletedOf returns failed future when firstCompletedOf takes only failed future.', (done: MochaDone) => {
     let f1 = Future.failed(new Error('failed future'));
     let f2 = Future.firstCompletedOf([f1]);
-    f2.onFailure((err: Error) => {
-      assert.equal(err.message, 'failed future');
-      done();
-    }).onSuccess((result: any) => {
-      done(new Error('must fail'));
-    });
+
+    f2.transform(
+      (value) => {
+        throw new Error('must fail');
+      },
+      (err) => {
+        assert.equal(err.message, 'failed future');
+      }
+    ).nodify(done);
   });
 
   it('firstCompletedOf returns successful future when firstCompletedOf takes only successful future.', (done: MochaDone) => {
@@ -83,11 +86,13 @@ describe('#firstCompletedOf', () => {
     let f3 = new Future(p3);
 
     let f4 = Future.firstCompletedOf([ f1, f2, f3 ]);
-    f4.onFailure((err: Error) => {
-      assert.equal(err.message, 'rejected');
-      done();
-    }).onSuccess((result: any) => {
-      done(new Error('must fail'));
-    });
+    f4.transform(
+      (value) => {
+        throw new Error('must fail');
+      },
+      (err) => {
+        assert.equal(err.message, 'rejected');
+      }
+    ).nodify(done);
   });
 });

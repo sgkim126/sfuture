@@ -30,15 +30,13 @@ describe('#recoverWith', () => {
       return Future.failed(new Error('Fail 2'));
     });
 
-    recoveredFuture.onSuccess(() => {
-      done(new Error('must fail'));
-    }).onFailure((err: Error) => {
-      try {
+    recoveredFuture.transform(
+      () => {
+        throw new Error('must fail');
+      },
+      (err: Error) => {
         assert.equal(err.message, 'Fail 2');
-      } catch (err) {
-        done(err);
       }
-      done();
-    });
+    ).nodify(done);
   });
 });

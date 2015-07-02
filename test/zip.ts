@@ -18,16 +18,14 @@ describe('#zip', () => {
     let future2 = Future.successful('b');
 
     future1.zip(future2)
-    .onFailure((err: Error) => {
-      try {
+    .transform(
+      () => {
+        throw new Error('must fail');
+      },
+      (err) => {
         assert.equal(err.message, 'a');
-      } catch (ex) {
-        done(ex);
       }
-      done();
-    }).onSuccess(() => {
-      done(new Error('must fail'));
-    });
+    ).nodify(done);
   });
 
   it('fails with the reason that `that` future failed if `this` future succeeded and `that` future failed.', (done: MochaDone) => {
@@ -35,16 +33,14 @@ describe('#zip', () => {
     let future2 = Future.failed(new Error('b'));
 
     future1.zip(future2)
-    .onFailure((err: Error) => {
-      try {
+    .transform(
+      () => {
+        throw new Error('must fail');
+      },
+      (err) => {
         assert.equal(err.message, 'b');
-      } catch (ex) {
-        done(ex);
       }
-      done();
-    }).onSuccess(() => {
-      done(new Error('must fail'));
-    });
+    ).nodify(done);
   });
 
   it('fails with the reason that `this` future failed if both future failed.', (done: MochaDone) => {
@@ -52,15 +48,13 @@ describe('#zip', () => {
     let future2 = Future.failed(new Error('b'));
 
     future1.zip(future2)
-    .onFailure((err: Error) => {
-      try {
+    .transform(
+      () => {
+        throw new Error('must fail');
+      },
+      (err) => {
         assert.equal(err.message, 'a');
-      } catch (ex) {
-        done(ex);
       }
-      done();
-    }).onSuccess(() => {
-      done(new Error('must fail'));
-    });
+    ).nodify(done);
   });
 });

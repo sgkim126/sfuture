@@ -8,14 +8,11 @@ describe('#sequence', () => {
       Future.successful('hello'),
       Future.successful(20)
     ]);
-    future.onSuccess((results) => {
+    future.map((results) => {
       assert.equal(results[0], 10);
       assert.equal(results[1], 'hello');
       assert.equal(results[2], 20);
-      done();
-    }).onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    });
+    }).nodify(done);
   });
 
   it('Future.sequence(empty array) returns empty array', (done: MochaDone) => {
@@ -23,10 +20,7 @@ describe('#sequence', () => {
     ]);
     future.map((results) => {
       assert.equal(results.length, 0);
-      done();
-    }).onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    });
+    }).nodify(done);
   });
 
   it('Future.sequence(Future<any[]>) returns Future<any[][]>', (done: MochaDone) => {
@@ -39,10 +33,7 @@ describe('#sequence', () => {
 
     future.map((results) => {
       assert.deepEqual(results, [ [ 1, 2 ], [ 3 ], [ 4, 5, 6 ] ]);
-      done();
-    }).onFailure((err: Error) => {
-      done(err);
-    });
+    }).nodify(done);
   });
 
 
@@ -52,12 +43,14 @@ describe('#sequence', () => {
       Future.successful(10),
       Future.successful('hello')
     ]);
-    future.onFailure((err) => {
-      assert.equal(err.message, 'hello, error!');
-      done();
-    }).onSuccess((result) => {
-      done(new Error('Must not reached here.'));
-    });
+    future.transform(
+      () => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert.equal(err.message, 'hello, error!');
+      }
+    ).nodify(done);
   });
 });
 

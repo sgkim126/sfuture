@@ -22,12 +22,14 @@ describe('#fold', () => {
     let f3 = Future.successful(1);
 
     Future.fold([ f1, f2, f3 ], 0, (base: number, result: number): number => { return base + result; })
-    .onSuccess((result: number) => {
-      done(new Error('should fail'));
-    }).recover((err: Error): number => {
-      assert.equal(err.message, 'second future failed');
-      return 0;
-    }).nodify(done);
+    .transform(
+      (result: number) => {
+        throw new Error('should fail');
+      },
+      (err: Error) => {
+        assert.equal(err.message, 'second future failed');
+      }
+    ).nodify(done);
   });
 
   it('does not execute op when there is a failed future', (done: MochaDone) => {
@@ -38,13 +40,15 @@ describe('#fold', () => {
     let count = 0;
 
     Future.fold([ f1, f2, f3 ], 0, (base: number, result: number): number => { return base + result; })
-    .onSuccess((result: number) => {
-      done(new Error('should fail'));
-    }).recover((err: Error): number => {
-      assert.equal(err.message, 'second future failed');
-      assert.equal(count, 0);
-      return 0;
-    }).nodify(done);
+    .transform(
+      (result: number) => {
+        throw new Error('should fail');
+      },
+      (err: Error) => {
+        assert.equal(err.message, 'second future failed');
+        assert.equal(count, 0);
+      }
+    ).nodify(done);
   });
 
   it('executes sequently', (done: MochaDone) => {

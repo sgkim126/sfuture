@@ -7,12 +7,9 @@ describe('#map', () => {
     let mapedFuture = future.map((result: number) => {
       return result + ' times!';
     });
-    mapedFuture.onSuccess((result: string) => {
+    mapedFuture.map((result: string) => {
       assert.equal(result, '10 times!');
-      done();
-    }).onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    });
+    }).nodify(done);
   });
 
   it('throws error when the original future throws error.', (done: MochaDone) => {
@@ -20,11 +17,13 @@ describe('#map', () => {
     let mapedFuture = future.map((result: number) => {
       return result + ' times!';
     });
-    mapedFuture.onFailure((err) => {
-      assert.equal(err.message, 'hello, error!');
-      done();
-    }).onSuccess((result) => {
-      done(new Error('Must not reached here.'));
-    });
+    mapedFuture.transform(
+      (result) => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert.equal(err.message, 'hello, error!');
+      }
+    ).nodify(done);
   });
 });

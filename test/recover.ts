@@ -8,12 +8,9 @@ describe('#recover', () => {
       return 100;
     });
 
-    recoveredFuture.onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    }).onSuccess((result: number) => {
+    recoveredFuture.map((result: number) => {
       assert.equal(120, result);
-      done();
-    });
+    }).nodify(done);
   });
 
   it('recover the failed future.', (done: MochaDone) => {
@@ -22,12 +19,9 @@ describe('#recover', () => {
       return 100;
     });
 
-    recoveredFuture.onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    }).onSuccess((result: number) => {
+    recoveredFuture.map((result: number) => {
       assert.equal(100, result);
-      done();
-    });
+    }).nodify(done);
   });
 });
 

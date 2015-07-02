@@ -27,15 +27,13 @@ describe('#fallbackTo', () => {
     let future2 = Future.failed(new Error('b'));
     let future3 = future1.fallbackTo(future2);
 
-    future3.onSuccess(() => {
-      done(new Error('must failed'));
-    }).onFailure((err: Error) => {
-      try {
+    future3.transform(
+      (value) => {
+        throw new Error('must failed');
+      },
+      (err) => {
         assert.equal(err.message, 'b');
-        done();
-      } catch (err) {
-        done(err);
       }
-    });
+    ).nodify(done);
   });
 });

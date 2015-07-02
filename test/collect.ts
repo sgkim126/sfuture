@@ -19,26 +19,27 @@ describe('#collect', () => {
       if (value > 0) {
         return value * 2;
       }
-    }).onSuccess((value: number) => {
-      done(new Error('must fail'));
-    }).onFailure((err: Error) => {
-      done();
-    });
+    }).transform(
+      (value) => {
+        throw new Error('must fail');
+      },
+      (err) => {
+        assert(err);
+      }
+    ).nodify(done);
   });
 
   it('returns the failed future if partial function throws error.', (done: MochaDone) => {
     let future = Future.successful(-5);
     future.collect((value: number): any => {
       throw new Error('no!!!!');
-    }).onSuccess((value: number) => {
-      done(new Error('must fail'));
-    }).onFailure((err: Error) => {
-      try {
+    }).transform(
+      (value: number) => {
+        throw new Error('must fail');
+      },
+      (err) => {
         assert.equal(err.message, 'no!!!!');
-        done();
-      } catch (err) {
-        done(err);
       }
-    });
+    ).nodify(done);
   });
 });

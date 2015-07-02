@@ -20,21 +20,22 @@ describe('#denodifiy', () => {
   };
 
   it('return successful future, if callback returns result', (done: MochaDone) => {
-    Future.denodify(addPositive, null, 100, 100).onSuccess((result: number) => {
-      assert.equal(result, 200);
-      done();
-    }).onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    });
+    Future.denodify(addPositive, null, 100, 100)
+    .map((value) => {
+      assert.equal(value, 200);
+    }).nodify(done);
   });
 
   it('return failed future, if callback returns error', (done: MochaDone) => {
-    Future.denodify(addPositive, null, -100, 100).onSuccess((result: number) => {
-      done(new Error('Must not reached here.'));
-    }).onFailure((err: Error) => {
-      assert.equal(err.message, 'lhs');
-      done();
-    });
+    Future.denodify(addPositive, null, -100, 100)
+    .transform(
+      (value) => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert.equal(err.message, 'lhs');
+      }
+    ).nodify(done);
   });
 });
 

@@ -13,15 +13,12 @@ describe('#transform', () => {
       }
     );
 
-    transformedFuture.onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    }).onSuccess((result: number) => {
+    transformedFuture.map((result: number) => {
       assert.equal(400, result);
-      done();
-    });
+    }).nodify(done);
   });
 
-  it('transformed future of failed future becomes failed future', <T>(done: MochaDone) => {
+  it('transformed future of failed future becomes failed future', (done: MochaDone) => {
     let future = Future.failed(new Error('failed'));
     let transformedFuture = future.transform(
       (result: number) => {
@@ -32,11 +29,13 @@ describe('#transform', () => {
       }
     );
 
-    transformedFuture.onFailure((err: Error) => {
-      assert.equal(err.message, 'failed failed');
-      done();
-    }).onSuccess((result: number) => {
-      done(new Error('Must not reached here.'));
-    });
+    transformedFuture.transform(
+      () => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert.equal(err.message, 'failed failed');
+      }
+    ).nodify(done);
   });
 });

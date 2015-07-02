@@ -8,12 +8,14 @@ describe('#filter', () => {
       return true;
     });
 
-    filteredFuture.onFailure((err: Error) => {
-      assert.equal(err.message, 'hello, error!');
-      done();
-    }).onSuccess((result: T) => {
-      done(new Error('Must not reached here.'));
-    });
+    filteredFuture.transform(
+      (value) => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert.equal(err.message, 'hello, error!');
+      }
+    ).nodify(done);
   });
 
   it('if filter function returns false, the result is failed future.', (done: MochaDone) => {
@@ -22,11 +24,14 @@ describe('#filter', () => {
       return false;
     });
 
-    filteredFuture.onFailure((err: Error) => {
-      done();
-    }).onSuccess((result: number) => {
-      done(new Error('Must not reached here.'));
-    });
+    filteredFuture.transform(
+      (value) => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert(err);
+      }
+    ).nodify(done);
   });
 
   it('if filter function returns true, the result is same as origianl future.', (done: MochaDone) => {
@@ -35,11 +40,8 @@ describe('#filter', () => {
       return true;
     });
 
-    filteredFuture.onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    }).onSuccess((result: number) => {
-      assert.equal(result, 1);
-      done();
-    });
+    filteredFuture.map((value) => {
+      assert.equal(value, 1);
+    }).nodify(done);
   });
 });

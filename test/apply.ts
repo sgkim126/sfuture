@@ -14,12 +14,10 @@ describe('#apply', () => {
       return 10;
     });
     assert.equal(future.constructor, Future);
-    future.onSuccess((result: number) => {
+
+    future.map((result: number) => {
       assert.equal(result, 10);
-      done();
-    }).onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    });
+    }).nodify(done);
   });
 
   it('returns a failed Future object when callback throws error', (done: MochaDone) => {
@@ -27,11 +25,14 @@ describe('#apply', () => {
       throw new Error('error');
     });
     assert.equal(future.constructor, Future);
-    future.onFailure((err: Error) => {
-      assert.equal(err.message, 'error');
-      done();
-    }).onSuccess((result) => {
-      done(new Error('Must not reached here.'));
-    });
+
+    future.transform(
+      (result) => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert.equal(err.message, 'error');
+      }
+    ).nodify(done);
   });
 });

@@ -8,12 +8,9 @@ describe('#flatMap', () => {
       let future = Future.successful(result + ' times!');
       return future;
     });
-    flatMappedFuture.onSuccess((result: string) => {
+    flatMappedFuture.map((result: string) => {
       assert.equal(result, '10 times!');
-      done();
-    }).onFailure((err: Error) => {
-      done(new Error('Must not reached here.'));
-    });
+    }).nodify(done);
   });
 
   it('throws error when the original future throws error.', (done: MochaDone) => {
@@ -22,12 +19,15 @@ describe('#flatMap', () => {
       let future = Future.successful(result + ' times!');
       return future;
     });
-    flatMappedFuture.onFailure((err) => {
-      assert.equal(err.message, 'hello, error!');
-      done();
-    }).onSuccess((result) => {
-      done(new Error('Must not reached here.'));
-    });
+
+    flatMappedFuture.transform(
+      (value) => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert.equal(err.message, 'hello, error!');
+      }
+    ).nodify(done);
   });
 
   it('throws error when a mapped future throws error.', (done: MochaDone) => {
@@ -35,12 +35,14 @@ describe('#flatMap', () => {
     let flatMappedFuture = future.flatMap((result: number): Future<number> => {
       throw new Error('hello, error!');
     });
-    flatMappedFuture.onFailure((err) => {
-      assert.equal(err.message, 'hello, error!');
-      done();
-    }).onSuccess((result) => {
-      done(new Error('Must not reached here.'));
-    });
+    flatMappedFuture.transform(
+      (value) => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert.equal(err.message, 'hello, error!');
+      }
+    ).nodify(done);
   });
 
   it('return failed future if callback returns failed future.', (done: MochaDone) => {
@@ -48,11 +50,13 @@ describe('#flatMap', () => {
     let flatMappedFuture = future.flatMap((result: number): Future<number> => {
       return Future.failed(new Error('hello, error!'));
     });
-    flatMappedFuture.onFailure((err) => {
-      assert.equal(err.message, 'hello, error!');
-      done();
-    }).onSuccess((result) => {
-      done(new Error('Must not reached here.'));
-    });
+    flatMappedFuture.transform(
+      (value) => {
+        throw new Error('Must not reached here.');
+      },
+      (err) => {
+        assert.equal(err.message, 'hello, error!');
+      }
+    ).nodify(done);
   });
 });

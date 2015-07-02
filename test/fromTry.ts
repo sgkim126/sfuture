@@ -11,15 +11,13 @@ describe('#fromTry', () => {
 
   it('creates an already completed failed future if error is given.', (done: MochaDone) => {
     let future = Future.fromTry(new Error('er'), 'hello');
-    future.onFailure((err: Error) => {
-      try {
+    future.transform(
+      (result) => {
+        throw new Error('must failed');
+      },
+      (err) => {
         assert.equal(err.message, 'er');
-      } catch (ex) {
-        done(ex);
       }
-      done();
-    }).onSuccess(() => {
-      done(new Error('must failed'));
-    });
+    ).nodify(done);
   });
 });
