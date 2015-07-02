@@ -26,6 +26,42 @@ describe('#andThen', () => {
     });
   });
 
+  it('should be called sequencial on failed future.', (done: MochaDone) => {
+    let sequence = 0;
+    let future = Future.failed(new Error('error'));
+    future.andThen((err: Error, result: number) => {
+      assert.equal(err.message, 'error');
+      assert.equal(result, undefined);
+
+      assert.equal(sequence, 0);
+
+      sequence += 1;
+    }).andThen((err: Error, result: number) => {
+      assert.equal(err.message, 'error');
+      assert.equal(result, undefined);
+
+      assert.equal(sequence, 1);
+
+      sequence += 10;
+    }).andThen((err: Error, result: number) => {
+      assert.equal(err.message, 'error');
+      assert.equal(result, undefined);
+
+      assert.equal(sequence, 11);
+
+      sequence += 100;
+    }).transform(
+      (result) => {
+        throw new Error('should fail');
+      },
+      (err) => {
+        assert.equal(err.message, 'error');
+
+        assert.equal(sequence, 111);
+      }
+    ).nodify(done);
+  });
+
   it('should keep the value even it throws error', (done: MochaDone) => {
     let sequence = 0;
     let future = Future.successful(100);
