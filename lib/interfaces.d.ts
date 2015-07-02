@@ -1,9 +1,9 @@
 interface ITry<F, T> {
-  (err?: Error, result?: F): T;
+  (err?: any, result?: F): T;
 }
 
 interface IFailure<T> {
-  (err: Error): T;
+  (err: any): T;
 }
 
 interface ISuccess<F, T> {
