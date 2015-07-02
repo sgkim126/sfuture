@@ -1,86 +1,60 @@
 /// <reference path='./interfaces.d.ts' />
-import Promise = require('mpromise');
 import util = require('util');
 
-function rejectOnError<T>(promise: Promise<T, any>, callback: IEmpty<void>) {
-  try  {
-    callback();
-  } catch (ex) {
-    promise.reject(ex);
-  }
-}
-
 class Future<T> {
-  private promise: Promise<T, any>;
+  private promise: Promise<T>;
 
-  constructor(promise: Promise<T, any>) {
+  constructor(promise: Promise<T>) {
     this.promise = promise;
   }
 
   static failed<T>(err: any): Future<T> {
-    let newPromise = new Promise<T, any>();
-    newPromise.reject(err);
+    let newPromise = Promise.reject(err);
 
     return new Future<T>(newPromise);
   }
 
   static successful<T>(result: T): Future<T> {
-    let newPromise = new Promise<T, any>();
-    newPromise.fulfill(result);
+    let newPromise = Promise.resolve<T>(result);
 
     return new Future<T>(newPromise);
   }
 
   static fromTry<T>(err: any, result: T): Future<T> {
-    let newPromise = new Promise<T, any>();
-    newPromise.resolve(err, result);
+    let newPromise = err ? Promise.reject(err) : Promise.resolve<T>(result);
 
     return new Future<T>(newPromise);
   }
 
 
   static apply<T>(fn: IEmpty<T>): Future<T> {
-    let newPromise = new Promise<T, any>();
-    setTimeout(
-      () => {
-        rejectOnError(newPromise, () => {
-          let result = fn();
-          newPromise.fulfill(result);
-        });
-      },
-      0);
+    let newPromise = new Promise<T>((resolve, reject) => {
+      setTimeout(
+        () => {
+          try  {
+            let result = fn();
+            resolve(result);
+          } catch (ex) {
+            reject(ex);
+          }
+        },
+        0);
+    });
     return new Future<T>(newPromise);
   }
 
 
   static sequence<T>(futures: Future<T>[]): Future<T[]> {
-    let makeSequence = <T>(futures: Future<T>[], result: T[]): Future<T[]> => {
-      if (futures.length === 0) {
-        return Future.successful(result);
-      }
-
-      futures = futures.slice(0);
-      result = result.slice(0);
-      let future: Future<T> = futures.shift();
-
-      return future.flatMap((value: T): Future<T[]> => {
-        result.push(value);
-        return makeSequence(futures, result);
-      });
-    };
-
-    return makeSequence(futures, []);
+    let newPromise = Promise.all(futures.map((f) => {
+      return f.promise;
+    }));
+    return new Future<T[]>(newPromise);
   }
 
   static firstCompletedOf<T>(futures: Future<T>[]): Future<T> {
-    let newPromise = new Promise<T, any>();
-
-    futures.map((future: Future<T>) => {
-      future.onComplete((err: any, result: T) => {
-        newPromise.resolve(err, result);
-      });
-    });
-
+    let newPromise = Promise.race(futures.map((f) => {
+      return f.promise;
+    }));
     return new Future<T>(newPromise);
   }
 
@@ -91,25 +65,25 @@ class Future<T> {
       return Future.successful(null);
     }
 
-    let newPromise = new Promise<T, any>();
+    let newPromise = new Promise<T>((resolve, reject) => {
+      let search: ITry<T, void> = (err: any, result: T): void => {
+        count -= 1;
+        if (!err) {
+          if (predicate(result)) {
+            resolve(result);
+            return;
+          }
+        }
 
-    let search: ITry<T, void> = (err: any, result: T): void => {
-      count -= 1;
-      if (!err) {
-        if (predicate(result)) {
-          newPromise.fulfill(result);
+        if (count === 0) {
+          resolve(null);
           return;
         }
-      }
+      };
 
-      if (count === 0) {
-        newPromise.fulfill(null);
-        return;
-      }
-    };
-
-    futures.map((future: Future<T>) => {
-      future.onComplete(search);
+      futures.map((future: Future<T>) => {
+        future.onComplete(search);
+      });
     });
 
     return new Future(newPromise);
@@ -141,33 +115,38 @@ class Future<T> {
   }
 
   static denodify<T>(fn: Function, thisArg: any, ...args: any[]): Future<T> {
-    let newPromise = new Promise<T, any>();
-    args.push((err: any, result: T) => {
-      if (err) {
-        newPromise.reject(err);
-        return;
-      }
+    let newPromise = new Promise<T>((resolve, reject) => {
+      args.push((err: any, result: T) => {
+        if (err) {
+          reject(err);
+          return;
+        }
 
-      newPromise.fulfill(result);
+        resolve(result);
+      });
+
+      fn.apply(thisArg, args);
     });
-
-    fn.apply(thisArg, args);
-
     return new Future<T>(newPromise);
   }
 
   onSuccess(callback: ISuccess<T, void>) {
-    this.promise.onFulfill(callback);
+    this.promise.then(callback);
     return this;
   }
 
   onFailure(callback: IFailure<void>) {
-    this.promise.onReject(callback);
+    this.promise.catch(callback);
     return this;
   }
 
   onComplete(callback: ITry<T, void>) {
-    this.promise.onResolve(callback);
+    this.promise.then(
+      (value: T) => {
+        callback(undefined, value);
+      },
+      callback
+    );
     return this;
   }
 
@@ -177,78 +156,47 @@ class Future<T> {
   }
 
   transform<U>(s: ISuccess<T, U>, f: IFailure<any>): Future<U> {
-    let newPromise = new Promise<U, any>();
-
-    this.promise.onResolve((err: any, result: T) => {
-      rejectOnError(newPromise, () => {
-        if (err) {
-          let newError = f(err);
-          newPromise.reject(newError);
-          return;
-        }
-
-        let newValue = s(result);
-        newPromise.fulfill(newValue);
-      });
-    });
-
+    let newPromise = this.promise.then(
+      (result: T) => {
+        return s(result);
+      },
+      (err: any) => {
+        throw f(err);
+      }
+    );
     return new Future<U>(newPromise);
   }
 
   map<U>(mapping: ISuccess<T, U>): Future<U> {
-    let newPromise = new Promise<U, any>();
-
-    this.promise.onResolve((err: any, result: T) => {
-      if (err) {
-        newPromise.reject(err);
-        return;
+    let newPromise = this.promise.then(
+      (value: T) => {
+        return mapping(value);
       }
-
-      rejectOnError(newPromise, () => {
-        newPromise.fulfill(mapping(result));
-      });
-    });
+    );
 
     return new Future<U>(newPromise);
   }
 
   flatMap<U>(futuredMapping: ISuccess<T, Future<U>>): Future<U> {
-    let newPromise = new Promise<U, any>();
-
-    this.promise.onResolve((err: any, result: T) => {
-      if (err) {
-        newPromise.reject(err);
-        return;
+    let newPromise = this.promise.then(
+      (value: T) => {
+        return futuredMapping(value)
+        .promise;
       }
-
-      rejectOnError(newPromise, () => {
-        futuredMapping(result)
-        .onComplete((err: any, result: U) => {
-          newPromise.resolve(err, result);
-        });
-      });
-    });
+    );
 
     return new Future<U>(newPromise);
   }
 
   filter(filterFunction: ISuccess<T, boolean>): Future<T> {
-    let newPromise = new Promise<T, any>();
-
-    this.promise.onResolve((err: any, result: T) => {
-      if (err) {
-        newPromise.reject(err);
-        return;
-      }
-
-      rejectOnError(newPromise, () => {
-        if (filterFunction(result)) {
-          newPromise.fulfill(result);
-        } else {
-          newPromise.reject(new Error("no.such.element"));
+    let newPromise = this.promise.then(
+      (value: T) => {
+        if (!filterFunction(value)) {
+          throw new Error('no.such.element');
         }
-      });
-    });
+        return value;
+      }
+    );
 
     return new Future<T>(newPromise);
   }
@@ -270,38 +218,21 @@ class Future<T> {
   }
 
   recover(recoverFunction: IFailure<T>): Future<T> {
-    let newPromise = new Promise<T, any>();
-
-    this.promise.onResolve((err: any, result: T) => {
-      if (err) {
-        rejectOnError(newPromise, () => {
-          newPromise.fulfill(recoverFunction(err));
-        });
-        return;
+    let newPromise = this.promise.catch(
+      (err: any) => {
+        return recoverFunction(err);
       }
-
-      newPromise.fulfill(result);
-    });
+    );
 
     return new Future<T>(newPromise);
   }
 
   recoverWith(recoverFunction: IFailure<Future<T>>): Future<T> {
-    let newPromise = new Promise<T, any>();
-
-    this.promise.onResolve((err: any, result: T) => {
-      if (err) {
-        rejectOnError(newPromise, () => {
-          recoverFunction(err)
-          .onComplete((err: any, result: T) => {
-            newPromise.resolve(err, result);
-          });
-        });
-        return;
+    let newPromise = this.promise.catch(
+      (err: any) => {
+        return recoverFunction(err).promise;
       }
-
-      newPromise.fulfill(result);
-    });
+    );
 
     return new Future<T>(newPromise);
   }
@@ -311,13 +242,11 @@ class Future<T> {
   }
 
   fallbackTo(future: Future<T>): Future<T> {
-    let newPromise = new Promise<T, any>();
-
-    this.onSuccess((result: T) => {
-      newPromise.fulfill(result);
-    }).onFailure((err: any) => {
-      future.onComplete((err: any, result: T) => {
-        newPromise.resolve(err, result);
+    let newPromise = new Promise<T>((resolve, reject) => {
+      this.onSuccess((result: T) => {
+        resolve(result);
+      }).onFailure((err: any) => {
+        future.transform(resolve, reject);
       });
     });
 
@@ -325,17 +254,36 @@ class Future<T> {
   }
 
   andThen(callback: ITry<T, void>) {
-    let newPromise = new Promise<T, any>();
-    newPromise.onResolve(callback);
+    let newPromise = this.promise.then(
+      (value: T) => {
+        try {
+          callback(undefined, value);
+        } catch (ex) {
+          return value;
+        }
+        return value;
+      },
+      (err: any) => {
+        try {
+          callback(err);
+        } catch (ex) {
+          throw err;
+        }
+        throw err;
+      }
+    );
 
-    this.promise.chain(newPromise);
-
-    return new Future<T>(this.promise);
+    return new Future<T>(newPromise);
   }
 
 
   nodify(callback: ITry<T, void>) {
-    this.promise.onResolve(callback);
+    this.promise.then(
+      (value: T) => {
+        callback(undefined, value);
+      },
+      callback
+    );
   }
 }
 

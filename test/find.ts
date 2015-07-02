@@ -1,4 +1,3 @@
-import Promise = require('mpromise');
 import assert = require('assert');
 import Future = require('../lib/future');
 
@@ -69,7 +68,9 @@ describe('#find', () => {
   });
 
   it('returns the first completed value regardless of the order in arguments', (done: MochaDone) => {
-    let p = new Promise<number, Error>();
+    let p = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { resolve(1); }, 1000);
+    });
     let f1 = new Future(p);
     let f2 = Future.successful(2);
 
@@ -79,7 +80,5 @@ describe('#find', () => {
     future.map((result) => {
       assert.equal(result, 2);
     }).nodify(done);
-
-    setTimeout(() => { p.fulfill(1); }, 1000);
   });
 });

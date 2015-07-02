@@ -1,4 +1,3 @@
-import Promise = require('mpromise');
 import assert = require('assert');
 import Future = require('../lib/future');
 
@@ -21,17 +20,19 @@ describe('#firstCompletedOf', () => {
   });
 
   it('firstCompletedOf returns successful future when the first completed future is successful', (done: MochaDone) => {
-    let p1 = new Promise<number, Error>();
-    let p2 = new Promise<number, Error>();
-    let p3 = new Promise<number, Error>();
+    let p1 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { resolve(1); }, 30);
+    });
+    let p2 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { reject(new Error('rejected')); }, 20);
+    });
+    let p3 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { resolve(3); }, 10);
+    });
 
     let f1 = new Future(p1);
     let f2 = new Future(p2);
     let f3 = new Future(p3);
-
-    setTimeout(() => { p1.fulfill(1); }, 30);
-    setTimeout(() => { p2.reject(new Error('rejected')); }, 20);
-    setTimeout(() => { p3.fulfill(3); }, 10);
 
     let f4 = Future.firstCompletedOf([ f1, f2, f3 ]);
     f4.map((result: number) => {
@@ -40,17 +41,19 @@ describe('#firstCompletedOf', () => {
   });
 
   it('does not change the result even other futures are completed', (done: MochaDone) => {
-    let p1 = new Promise<number, Error>();
-    let p2 = new Promise<number, Error>();
-    let p3 = new Promise<number, Error>();
+    let p1 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { resolve(1); }, 30);
+    });
+    let p2 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { reject(new Error('rejected')); }, 20);
+    });
+    let p3 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { resolve(3); }, 10);
+    });
 
     let f1 = new Future(p1);
     let f2 = new Future(p2);
     let f3 = new Future(p3);
-
-    setTimeout(() => { p1.fulfill(1); }, 30);
-    setTimeout(() => { p2.reject(new Error('rejected')); }, 20);
-    setTimeout(() => { p3.fulfill(3); }, 10);
 
     let futures = [ f1, f2, f3 ];
 
@@ -65,17 +68,19 @@ describe('#firstCompletedOf', () => {
   });
 
   it('firstCompletedOf returns failed future when the first completed future is failed', (done: MochaDone) => {
-    let p1 = new Promise<number, Error>();
-    let p2 = new Promise<number, Error>();
-    let p3 = new Promise<number, Error>();
+    let p1 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { resolve(1); }, 30);
+    });
+    let p2 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { resolve(2); }, 20);
+    });
+    let p3 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { reject(new Error('rejected')); }, 10);
+    });
 
     let f1 = new Future(p1);
     let f2 = new Future(p2);
     let f3 = new Future(p3);
-
-    setTimeout(() => { p1.fulfill(1); }, 30);
-    setTimeout(() => { p2.fulfill(2); }, 20);
-    setTimeout(() => { p3.reject(new Error('rejected')); }, 10);
 
     let f4 = Future.firstCompletedOf([ f1, f2, f3 ]);
     f4.onFailure((err: Error) => {
