@@ -1,11 +1,8 @@
+/// <reference path='./interfaces.d.ts' />
 import Promise = require('mpromise');
 import util = require('util');
-import IFutureFunction = require('./interface/function');
-import IFutureCallback = require('./interface/callback');
-import IFutureSuccessCallback = require('./interface/success-callback');
-import IFutureFailureCallback = require('./interface/failure-callback');
 
-function rejectOnError<T>(promise: Promise<T, Error>, callback: () => void) {
+function rejectOnError<T>(promise: Promise<T, Error>, callback: IEmpty<void>) {
   try  {
     callback();
   } catch (ex) {
@@ -42,7 +39,7 @@ class Future<T> {
   }
 
 
-  static apply<T>(fn: IFutureFunction<T, Error>): Future<T> {
+  static apply<T>(fn: IEmpty<T>): Future<T> {
     let newPromise = new Promise<T, Error>();
     setTimeout(
       () => {
@@ -87,7 +84,7 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  static find<T>(futures: Future<T>[], predicate: (value: T) => boolean): Future<T> {
+  static find<T>(futures: Future<T>[], predicate: ISuccess<T, boolean>): Future<T> {
     let count = futures.length;
 
     if (count === 0) {
@@ -96,7 +93,7 @@ class Future<T> {
 
     let newPromise = new Promise<T, Error>();
 
-    let search = (err: Error, result: T): void => {
+    let search: ITry<T, void> = (err: Error, result: T): void => {
       count -= 1;
       if (!err) {
         if (predicate(result)) {
@@ -139,7 +136,7 @@ class Future<T> {
     });
   }
 
-  static traverse<T, R>(args: T[], fn: (arg: T) => Future<R>): Future<R[]> {
+  static traverse<T, R>(args: T[], fn: ISuccess<T, Future<R>>): Future<R[]> {
     return Future.sequence(args.map(fn));
   }
 
@@ -159,27 +156,27 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  onSuccess(callback: IFutureSuccessCallback<T, Error>) {
+  onSuccess(callback: ISuccess<T, void>) {
     this.promise.onFulfill(callback);
     return this;
   }
 
-  onFailure(callback: IFutureFailureCallback<Error>) {
+  onFailure(callback: IFailure<void>) {
     this.promise.onReject(callback);
     return this;
   }
 
-  onComplete(callback: IFutureCallback<T, Error>) {
+  onComplete(callback: ITry<T, void>) {
     this.promise.onResolve(callback);
     return this;
   }
 
 
-  foreach<U>(f: (result: T) => U): void {
+  foreach<U>(f: ISuccess<T, U>): void {
     this.onSuccess(f);
   }
 
-  transform<U>(s: (value: T) => (U), f: (err: Error) => Error): Future<U> {
+  transform<U>(s: ISuccess<T, U>, f: IFailure<Error>): Future<U> {
     let newPromise = new Promise<U, Error>();
 
     this.promise.onResolve((err: Error, result: T) => {
@@ -198,7 +195,7 @@ class Future<T> {
     return new Future<U>(newPromise);
   }
 
-  map<U>(mapping: (org: T) => U): Future<U> {
+  map<U>(mapping: ISuccess<T, U>): Future<U> {
     let newPromise = new Promise<U, Error>();
 
     this.promise.onResolve((err: Error, result: T) => {
@@ -215,7 +212,7 @@ class Future<T> {
     return new Future<U>(newPromise);
   }
 
-  flatMap<U>(futuredMapping: (org: T) => Future<U>): Future<U> {
+  flatMap<U>(futuredMapping: ISuccess<T, Future<U>>): Future<U> {
     let newPromise = new Promise<U, Error>();
 
     this.promise.onResolve((err: Error, result: T) => {
@@ -235,7 +232,7 @@ class Future<T> {
     return new Future<U>(newPromise);
   }
 
-  filter(filterFunction: (value: T) => boolean): Future<T> {
+  filter(filterFunction: ISuccess<T, boolean>): Future<T> {
     let newPromise = new Promise<T, Error>();
 
     this.promise.onResolve((err: Error, result: T) => {
@@ -256,12 +253,12 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  withFilter(filterFunction: (value: T) => boolean): Future<T> {
+  withFilter(filterFunction: ISuccess<T, boolean>): Future<T> {
     return this.filter(filterFunction);
   }
 
 
-  collect<S>(pf: (value: T) => S): Future<S> {
+  collect<S>(pf: ISuccess<T, S>): Future<S> {
     return this.map((value: T): S => {
       let result: S = pf(value);
       if (result === undefined) {
@@ -272,7 +269,7 @@ class Future<T> {
     });
   }
 
-  recover(recoverFunction: (err: Error) => T): Future<T> {
+  recover(recoverFunction: IFailure<T>): Future<T> {
     let newPromise = new Promise<T, Error>();
 
     this.promise.onResolve((err: Error, result: T) => {
@@ -289,7 +286,7 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  recoverWith(recoverFunction: (err: Error) => Future<T>): Future<T> {
+  recoverWith(recoverFunction: IFailure<Future<T>>): Future<T> {
     let newPromise = new Promise<T, Error>();
 
     this.promise.onResolve((err: Error, result: T) => {
@@ -327,7 +324,7 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  andThen(callback: IFutureCallback<T, Error>) {
+  andThen(callback: ITry<T, void>) {
     let newPromise = new Promise<T, Error>();
     newPromise.onResolve(callback);
 
@@ -337,7 +334,7 @@ class Future<T> {
   }
 
 
-  nodify(callback: (err: Error, result: T) => void) {
+  nodify(callback: ITry<T, void>) {
     this.promise.onResolve(callback);
   }
 }
