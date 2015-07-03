@@ -96,4 +96,28 @@ describe('#find', () => {
       assert.equal(value, null);
     });
   });
+
+  it('returns the successful future if the other cases throw error and one case matched', (done: MochaDone) => {
+    let f1 = Future.successful(1);
+    let f2 = Future.successful(2);
+    let f3 = Future.successful(3);
+
+    let p4 = new Promise<number>((resolve, reject) => {
+      setTimeout(() => { resolve(4); }, 100);
+    });
+    let f4 = new Future(p4);
+
+    let futures = [ f1, f2, f3, f4 ];
+    let future = Future.find(futures, (value: number): boolean => {
+      if (value !== 4) {
+        throw new Error();
+      }
+
+      return true;
+    });
+
+    should.succeed(future, done, (value: number) => {
+      assert.equal(value, 4);
+    });
+  });
 });
