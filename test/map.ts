@@ -14,7 +14,7 @@ describe('#map', () => {
     });
   });
 
-  it('throws error when the original future throws error.', (done: MochaDone) => {
+  it('returns failed future when the original future is failed.', (done: MochaDone) => {
     let future = Future.failed(new Error('hello, error!'));
     let mapedFuture = future.map((result: number) => {
       return result + ' times!';
@@ -22,6 +22,17 @@ describe('#map', () => {
 
     should.fail(mapedFuture, done, (err) => {
       assert.equal(err.message, 'hello, error!');
+    });
+  });
+
+  it('returns the failed future if the callback throw error', (done: MochaDone) => {
+    let future = Future.successful(10);
+    let mapedFuture = future.map((result: number) => {
+      throw new Error('failed');
+    });
+
+    should.fail(mapedFuture, done, (err) => {
+      assert.equal(err.message, 'failed');
     });
   });
 });
