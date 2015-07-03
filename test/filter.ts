@@ -33,4 +33,15 @@ describe('#filter', () => {
       assert.equal(value, 1);
     });
   });
+
+  it('returns failed future, if callback throw error.', (done: MochaDone) => {
+    let future = Future.successful(1);
+    let filteredFuture = future.filter((result: number): boolean => {
+      throw new Error('filter fail');
+    });
+
+    should.fail(filteredFuture, done, (err) => {
+      assert.equal(err.message, 'filter fail');
+    });
+  });
 });
