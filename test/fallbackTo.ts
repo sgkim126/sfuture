@@ -32,4 +32,29 @@ describe('#fallbackTo', () => {
       assert.equal(err.message, 'b');
     });
   });
+
+  it('returns immediately if the current future is successful.', (done: MochaDone) => {
+    let future1 = Future.successful(120);
+
+    let flag = false;
+
+    let promise2 = new Promise<number>((resolve, reject) => {
+      setTimeout(
+        () => {
+          flag = true;
+          resolve(1);
+        },
+        10
+      );
+    });
+
+    let future2 = new Future(promise2);
+
+    let future3 = future1.fallbackTo(future2);
+
+    should.succeed(future3, done, (value: number) => {
+      assert.equal(value, 120);
+      assert.equal(flag, false);
+    });
+  });
 });
