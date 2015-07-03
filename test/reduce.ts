@@ -47,4 +47,16 @@ describe('#reduce', () => {
       assert.equal(result, 2);
     });
   });
+
+  it('returns failed future if the callback throws error', (done: MochaDone) => {
+    let f1 = Future.successful(1);
+    let f2 = Future.successful(2);
+    let f3 = Future.successful(3);
+
+    let future = Future.reduce([ f1, f2, f3 ], (base: number, result: number): number => { throw new  Error('error'); });
+
+    should.fail(future, done, (err) => {
+      assert.equal(err.message, 'error');
+    });
+  });
 });
