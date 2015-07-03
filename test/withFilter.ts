@@ -1,4 +1,5 @@
 import assert = require('assert');
+import should = require('./should');
 import Future = require('../lib/future');
 
 describe('#withFilter', () => {
@@ -8,14 +9,9 @@ describe('#withFilter', () => {
       return true;
     });
 
-    filteredFuture.transform(
-      () => {
-        throw new Error('Must not reached here.');
-      },
-      (err: Error) => {
-        assert.equal(err.message, 'hello, error!');
-      }
-    ).nodify(done);
+    should.fail(filteredFuture, done, (err: Error) => {
+      assert.equal(err.message, 'hello, error!');
+    });
   });
 
   it('if filter function returns false, the result is failed future.', (done: MochaDone) => {
@@ -24,14 +20,7 @@ describe('#withFilter', () => {
       return false;
     });
 
-    filteredFuture.transform(
-      () => {
-        throw new Error('Must not reached here.');
-      },
-      (err: Error) => {
-        return;
-      }
-    ).nodify(done);
+    should.fail(filteredFuture, done);
   });
 
   it('if filter function returns true, the result is same as origianl future.', (done: MochaDone) => {
@@ -40,9 +29,9 @@ describe('#withFilter', () => {
       return true;
     });
 
-    filteredFuture.map((result: number) => {
+    should.succeed(filteredFuture, done, (result: number) => {
       assert.equal(result, 1);
-    }).nodify(done);
+    });
   });
 });
 

@@ -1,4 +1,5 @@
 import assert = require('assert');
+import should = require('./should');
 import Future = require('../lib/future');
 
 describe('#recover', () => {
@@ -8,9 +9,9 @@ describe('#recover', () => {
       return 100;
     });
 
-    recoveredFuture.map((result: number) => {
+    should.succeed(recoveredFuture, done, (result: number) => {
       assert.equal(120, result);
-    }).nodify(done);
+    });
   });
 
   it('recover the failed future.', (done: MochaDone) => {
@@ -19,9 +20,9 @@ describe('#recover', () => {
       return 100;
     });
 
-    recoveredFuture.map((result: number) => {
+    should.succeed(recoveredFuture, done, (result: number) => {
       assert.equal(100, result);
-    }).nodify(done);
+    });
   });
 });
 

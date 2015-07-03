@@ -1,4 +1,5 @@
 import assert = require('assert');
+import should = require('./should');
 import Future = require('../lib/future');
 
 describe('#flatMap', () => {
@@ -8,9 +9,10 @@ describe('#flatMap', () => {
       let future = Future.successful(result + ' times!');
       return future;
     });
-    flatMappedFuture.map((result: string) => {
+
+    should.succeed(flatMappedFuture, done, (result: string) => {
       assert.equal(result, '10 times!');
-    }).nodify(done);
+    });
   });
 
   it('throws error when the original future throws error.', (done: MochaDone) => {
@@ -20,14 +22,9 @@ describe('#flatMap', () => {
       return future;
     });
 
-    flatMappedFuture.transform(
-      (value) => {
-        throw new Error('Must not reached here.');
-      },
-      (err) => {
-        assert.equal(err.message, 'hello, error!');
-      }
-    ).nodify(done);
+    should.fail(flatMappedFuture, done, (err) => {
+      assert.equal(err.message, 'hello, error!');
+    });
   });
 
   it('throws error when a mapped future throws error.', (done: MochaDone) => {
@@ -35,14 +32,10 @@ describe('#flatMap', () => {
     let flatMappedFuture = future.flatMap((result: number): Future<number> => {
       throw new Error('hello, error!');
     });
-    flatMappedFuture.transform(
-      (value) => {
-        throw new Error('Must not reached here.');
-      },
-      (err) => {
-        assert.equal(err.message, 'hello, error!');
-      }
-    ).nodify(done);
+
+    should.fail(flatMappedFuture, done, (err) => {
+      assert.equal(err.message, 'hello, error!');
+    });
   });
 
   it('return failed future if callback returns failed future.', (done: MochaDone) => {
@@ -50,13 +43,9 @@ describe('#flatMap', () => {
     let flatMappedFuture = future.flatMap((result: number): Future<number> => {
       return Future.failed(new Error('hello, error!'));
     });
-    flatMappedFuture.transform(
-      (value) => {
-        throw new Error('Must not reached here.');
-      },
-      (err) => {
-        assert.equal(err.message, 'hello, error!');
-      }
-    ).nodify(done);
+
+    should.fail(flatMappedFuture, done, (err) => {
+      assert.equal(err.message, 'hello, error!');
+    });
   });
 });

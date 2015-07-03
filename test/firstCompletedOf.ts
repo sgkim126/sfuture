@@ -1,4 +1,5 @@
 import assert = require('assert');
+import should = require('./should');
 import Future = require('../lib/future');
 
 describe('#firstCompletedOf', () => {
@@ -6,20 +7,16 @@ describe('#firstCompletedOf', () => {
     let f1 = Future.failed(new Error('failed future'));
     let f2 = Future.firstCompletedOf([f1]);
 
-    f2.transform(
-      (value) => {
-        throw new Error('must fail');
-      },
-      (err) => {
-        assert.equal(err.message, 'failed future');
-      }
-    ).nodify(done);
+    should.fail(f2, done, (err) => {
+      assert.equal(err.message, 'failed future');
+    });
   });
 
   it('firstCompletedOf returns successful future when firstCompletedOf takes only successful future.', (done: MochaDone) => {
     let f1 = Future.successful(1);
     let f2 = Future.firstCompletedOf([f1]);
-    f2.nodify(done);
+
+    should.succeed(f2, done);
   });
 
   it('firstCompletedOf returns successful future when the first completed future is successful', (done: MochaDone) => {
@@ -38,9 +35,10 @@ describe('#firstCompletedOf', () => {
     let f3 = new Future(p3);
 
     let f4 = Future.firstCompletedOf([ f1, f2, f3 ]);
-    f4.map((result: number) => {
+
+    should.succeed(f4, done, (result: number) => {
       assert.equal(result, 3);
-    }).nodify(done);
+    });
   });
 
   it('does not change the result even other futures are completed', (done: MochaDone) => {
@@ -64,9 +62,9 @@ describe('#firstCompletedOf', () => {
 
     Future.sequence(futures)
     .onComplete(() => {
-      f4.map((result: number) => {
+      should.succeed(f4, done, (result: number) => {
         assert.equal(result, 3);
-      }).nodify(done);
+      });
     });
   });
 
@@ -86,13 +84,9 @@ describe('#firstCompletedOf', () => {
     let f3 = new Future(p3);
 
     let f4 = Future.firstCompletedOf([ f1, f2, f3 ]);
-    f4.transform(
-      (value) => {
-        throw new Error('must fail');
-      },
-      (err) => {
-        assert.equal(err.message, 'rejected');
-      }
-    ).nodify(done);
+
+    should.fail(f4, done, (err) => {
+      assert.equal(err.message, 'rejected');
+    });
   });
 });

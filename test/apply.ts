@@ -1,4 +1,5 @@
 import assert = require('assert');
+import should = require('./should');
 import Future = require('../lib/future');
 
 describe('#apply', () => {
@@ -15,9 +16,9 @@ describe('#apply', () => {
     });
     assert.equal(future.constructor, Future);
 
-    future.map((result: number) => {
+    should.succeed(future, done, (result: number) => {
       assert.equal(result, 10);
-    }).nodify(done);
+    });
   });
 
   it('returns a failed Future object when callback throws error', (done: MochaDone) => {
@@ -26,13 +27,8 @@ describe('#apply', () => {
     });
     assert.equal(future.constructor, Future);
 
-    future.transform(
-      (result) => {
-        throw new Error('Must not reached here.');
-      },
-      (err) => {
-        assert.equal(err.message, 'error');
-      }
-    ).nodify(done);
+    should.fail(future, done, (err) => {
+      assert.equal(err.message, 'error');
+    });
   });
 });

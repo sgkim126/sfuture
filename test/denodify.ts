@@ -1,4 +1,5 @@
 import assert = require('assert');
+import should = require('./should');
 import Future = require('../lib/future');
 
 describe('#denodifiy', () => {
@@ -20,22 +21,20 @@ describe('#denodifiy', () => {
   };
 
   it('return successful future, if callback returns result', (done: MochaDone) => {
-    Future.denodify(addPositive, null, 100, 100)
-    .map((value) => {
+    let future = Future.denodify(addPositive, null, 100, 100);
+
+
+    should.succeed(future, done, (value) => {
       assert.equal(value, 200);
-    }).nodify(done);
+    });
   });
 
   it('return failed future, if callback returns error', (done: MochaDone) => {
-    Future.denodify(addPositive, null, -100, 100)
-    .transform(
-      (value) => {
-        throw new Error('Must not reached here.');
-      },
-      (err) => {
-        assert.equal(err.message, 'lhs');
-      }
-    ).nodify(done);
+    let future = Future.denodify(addPositive, null, -100, 100);
+
+    should.fail(future, done, (err) => {
+      assert.equal(err.message, 'lhs');
+    });
   });
 });
 

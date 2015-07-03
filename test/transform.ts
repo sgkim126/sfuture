@@ -1,4 +1,5 @@
 import assert = require('assert');
+import should = require('./should');
 import Future = require('../lib/future');
 
 describe('#transform', () => {
@@ -13,9 +14,9 @@ describe('#transform', () => {
       }
     );
 
-    transformedFuture.map((result: number) => {
+    should.succeed(transformedFuture, done, (result: number) => {
       assert.equal(400, result);
-    }).nodify(done);
+    });
   });
 
   it('transformed future of failed future becomes failed future', (done: MochaDone) => {
@@ -29,13 +30,8 @@ describe('#transform', () => {
       }
     );
 
-    transformedFuture.transform(
-      () => {
-        throw new Error('Must not reached here.');
-      },
-      (err) => {
-        assert.equal(err.message, 'failed failed');
-      }
-    ).nodify(done);
+    should.fail(transformedFuture, done, (err) => {
+      assert.equal(err.message, 'failed failed');
+    });
   });
 });

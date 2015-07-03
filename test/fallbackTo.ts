@@ -1,4 +1,5 @@
 import assert = require('assert');
+import should = require('./should');
 import Future = require('../lib/future');
 
 describe('#fallbackTo', () => {
@@ -7,9 +8,9 @@ describe('#fallbackTo', () => {
     let future2 = Future.successful(120);
     let future3 = future1.fallbackTo(future2);
 
-    future3.map((result: number) => {
-      assert.equal(100, result);
-    }).nodify(done);
+    should.succeed(future3, done, (result: number) => {
+      assert.equal(result, 100);
+    });
   });
 
   it('recovers failed future.', (done: MochaDone) => {
@@ -17,9 +18,9 @@ describe('#fallbackTo', () => {
     let future2 = Future.successful(120);
     let future3 = future1.fallbackTo(future2);
 
-    future3.map((result: number) => {
-      assert.equal(120, result);
-    }).nodify(done);
+    should.succeed(future3, done, (result: number) => {
+      assert.equal(result, 120);
+    });
   });
 
   it('returns failed future if the given fails.', (done: MochaDone) => {
@@ -27,13 +28,8 @@ describe('#fallbackTo', () => {
     let future2 = Future.failed(new Error('b'));
     let future3 = future1.fallbackTo(future2);
 
-    future3.transform(
-      (value) => {
-        throw new Error('must failed');
-      },
-      (err) => {
-        assert.equal(err.message, 'b');
-      }
-    ).nodify(done);
+    should.fail(future3, done, (err) => {
+      assert.equal(err.message, 'b');
+    });
   });
 });

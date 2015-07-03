@@ -1,13 +1,14 @@
 import assert = require('assert');
+import should = require('./should');
 import Future = require('../lib/future');
 
 describe('#find', () => {
   it('returns null if the array is empty', (done: MochaDone) => {
     let future = Future.find([], () => { return true; });
 
-    future.map((result) => {
+    should.succeed(future, done, (result) => {
       assert.equal(result, null);
-    }).nodify(done);
+    });
   });
 
   it('returns null if all results do not satisfy the condition', (done: MochaDone) => {
@@ -21,9 +22,9 @@ describe('#find', () => {
     let futures = [ f1, f2, f3, f4, f5, f6, f7 ];
     let future = Future.find(futures, () => { return false; });
 
-    future.map((result) => {
+    should.succeed(future, done, (result) => {
       assert.equal(result, null);
-    }).nodify(done);
+    });
   });
 
   it('returns the value', (done: MochaDone) => {
@@ -37,9 +38,9 @@ describe('#find', () => {
     let futures = [ f1, f2, f3, f4, f5, f6, f7 ];
     let future = Future.find(futures, (value: number) => { return value === 4; });
 
-    future.map((result) => {
+    should.succeed(future, done, (result) => {
       assert.equal(result, 4);
-    }).nodify(done);
+    });
   });
 
   it('returns the successful value', (done: MochaDone) => {
@@ -48,9 +49,9 @@ describe('#find', () => {
     let futures = [ f1, f2 ];
     let future = Future.find(futures, (value: number) => { return true; });
 
-    future.map((result) => {
+    should.succeed(future, done, (result) => {
       assert.equal(result, 2);
-    }).nodify(done);
+    });
   });
 
   it('returns null if all futures are failed', (done: MochaDone) => {
@@ -62,9 +63,9 @@ describe('#find', () => {
     let futures = [ f1, f2, f3, f4, f5 ];
     let future = Future.find(futures, (value: number) => { return true; });
 
-    future.map((result) => {
+    should.succeed(future, done, (result) => {
       assert.equal(result, null);
-    }).nodify(done);
+    });
   });
 
   it('returns the first completed value regardless of the order in arguments', (done: MochaDone) => {
@@ -77,8 +78,8 @@ describe('#find', () => {
     let futures = [ f1, f2 ];
     let future = Future.find(futures, (value: number) => { return true; });
 
-    future.map((result) => {
+    should.succeed(future, done, (result) => {
       assert.equal(result, 2);
-    }).nodify(done);
+    });
   });
 });
