@@ -69,9 +69,13 @@ class Future<T> {
       let search: ITry<T, void> = (err: any, result: T): void => {
         count -= 1;
         if (!err) {
-          if (predicate(result)) {
-            resolve(result);
-            return;
+          try {
+            if (predicate(result)) {
+              resolve(result);
+              return;
+            }
+          } catch (ex) {
+            // Ignore error.
           }
         }
 

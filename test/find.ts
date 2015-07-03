@@ -82,4 +82,18 @@ describe('#find', () => {
       assert.equal(result, 2);
     });
   });
+
+  it('returns null if callback throws error on every cases', (done: MochaDone) => {
+    let f1 = Future.successful(1);
+    let f2 = Future.successful(2);
+    let f3 = Future.successful(3);
+    let f4 = Future.successful(4);
+
+    let futures = [ f1, f2, f3, f4 ];
+    let future = Future.find(futures, (value: number): boolean => { throw new Error(); });
+
+    should.succeed(future, done, (value: number) => {
+      assert.equal(value, null);
+    });
+  });
 });
