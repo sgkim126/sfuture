@@ -34,4 +34,36 @@ describe('#transform', () => {
       assert.equal(err.message, 'failed failed');
     });
   });
+
+  it('returns failed future if callback throw error', (done: MochaDone) => {
+    let future = Future.successful(100);
+    let transformedFuture = future.transform(
+      (result: number) => {
+        throw new Error('error');
+      },
+      (err: Error) => {
+        return err;
+      }
+    );
+
+    should.fail(transformedFuture, done, (err) => {
+      assert.equal(err.message, 'error');
+    });
+  });
+
+  it('returns failed future if error callback throw error', (done: MochaDone) => {
+    let future = Future.failed(new Error('failed'));
+    let transformedFuture = future.transform(
+      (result: number) => {
+        return result * 4;
+      },
+      (err: Error) => {
+        throw new Error('failed 2');
+      }
+    );
+
+    should.fail(transformedFuture, done, (err) => {
+      assert.equal(err.message, 'failed 2');
+    });
+  });
 });
