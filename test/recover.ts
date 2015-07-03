@@ -24,5 +24,15 @@ describe('#recover', () => {
       assert.equal(100, result);
     });
   });
-});
 
+  it('returns failed future if callback throw error.', (done: MochaDone) => {
+    let future = Future.failed(new Error('Fail'));
+    let recoveredFuture = future.recover((err: Error): number => {
+      throw new Error('Fail again');
+    });
+
+    should.fail(recoveredFuture, done, (err) => {
+      assert.equal(err.message, 'Fail again');
+    });
+  });
+});
