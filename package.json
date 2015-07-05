@@ -1,6 +1,6 @@
 {
   "name": "sfuture",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "JavaScript port of Scala Future",
   "author": "Seulgi Kim <dev@seulgi.kim>",
   "contributors": [
@@ -30,5 +30,5 @@
     "prepublish": "gulp build"
   },
   "license": "MIT",
-  "keywords": [ "future", "promise", "scala", "control flow" ]
+  "keywords": [ "future", "promise", "scala", "control flow", "concurrency" ]
 }
