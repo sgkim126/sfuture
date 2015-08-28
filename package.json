@@ -21,6 +21,7 @@
     "gulp": "latest",
     "gulp-istanbul": "latest",
     "gulp-mocha": "latest",
+    "mocha": "latest",
     "tslint": "latest",
     "typescript": "latest"
   },

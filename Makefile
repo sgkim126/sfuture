@@ -6,6 +6,9 @@ LINT_FLAGS := --config ./.tslintrc.json
 CC := tsc
 FLAGS := --module commonjs --target ES5 --noImplicitAny --noEmitOnError --suppressImplicitAnyIndexErrors --removeComments
 
+TESTER := _mocha
+TEST_FLAGS := --reporter spec --timeout 1000 --ui bdd
+
 SOURCE_NAMES := future
 TEST_NAMES := andThen \
     apply \
@@ -48,7 +51,7 @@ JS := $(patsubst %.ts, %.js, $(SOURCES) $(TESTS))
 LAST_BUILD_ALL := ./.last_build_all
 LAST_BUILD := ./.last_build
 
-.PHONY: lint build all clean
+.PHONY: lint build all clean test
 
 build: $(LAST_BUILD)
 
@@ -64,6 +67,9 @@ $(LAST_BUILD_ALL): $(SOURCES) $(TESTS)
 
 lint: $(SOURCES) $(TESTS)
 	$(LINT) $(LINT_FLAGS) $^
+
+test: $(LAST_BUILD_ALL)
+	$(TESTER) $(TEST_FLAGS)
 
 clean:
 	rm -f $(JS) $(DECLARES)
