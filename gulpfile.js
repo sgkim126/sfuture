@@ -2,7 +2,6 @@ var gulp = require('gulp');
 var istanbul = require('gulp-istanbul');
 var mocha = require('gulp-mocha');
 var ts = require('gulp-typescript');
-var tslint = require("gulp-tslint");
 
 gulp.task('build', function () {
   return gulp.src([
@@ -36,14 +35,4 @@ gulp.task("test", ["build"], function (cb) {
     });
 });
 
-gulp.task("lint", function () {
-  return gulp.src([
-      './**/*.ts',
-      '!./node_modules/**/*.ts',
-      '!./lib.d/**/*.d.ts'
-    ])
-    .pipe(tslint({configuration: require('./.tslintrc')}))
-    .pipe(tslint.report('prose'));
-});
-
-gulp.task("default", ["lint", "test"]);
+gulp.task("default", ["test"]);
