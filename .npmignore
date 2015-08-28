@@ -9,3 +9,6 @@
 /lib/interface/
 /node_modules/
 /test/
+
+/.last_build
+/.last_build_all

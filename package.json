@@ -21,13 +21,12 @@
     "gulp": "latest",
     "gulp-istanbul": "latest",
     "gulp-mocha": "latest",
-    "gulp-typescript": "latest",
     "tslint": "latest",
     "typescript": "latest"
   },
   "scripts": {
-    "test": "make lint && gulp",
-    "prepublish": "gulp build"
+    "test": "make lint && make all && gulp",
+    "prepublish": "make build"
   },
   "license": "MIT",
   "keywords": [ "future", "promise", "scala", "control flow", "concurrency" ]
