@@ -42,11 +42,12 @@ LIB_NAMES := es6-promise \
 SOURCES := $(patsubst %, ./lib/%.ts, $(SOURCE_NAMES))
 TESTS := $(patsubst %, ./test/%.ts, $(TEST_NAMES))
 LIBS := $(foreach LIB, $(LIB_NAMES), ./lib.d/$(LIB)/$(LIB).d.ts)
+JS := $(patsubst %.ts, %.js, $(SOURCES) $(TESTS))
 
 LAST_BUILD_ALL := ./.last_build_all
 LAST_BUILD := ./.last_build
 
-.PHONY: lint build all
+.PHONY: lint build all clean
 
 build: $(LAST_BUILD)
 
@@ -62,3 +63,7 @@ $(LAST_BUILD_ALL): $(SOURCES) $(TESTS)
 
 lint: $(SOURCES) $(TESTS)
 	$(LINT) $(LINT_FLAGS) $^
+
+clean:
+	rm -f $(JS)
+	@rm -f $(LAST_BUILD_ALL) $(LAST_BUILD)
