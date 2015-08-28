@@ -28,6 +28,7 @@ node_modules
 
 # Compiled files
 *.js
+/lib/*.d.ts
 
 /.last_build
 /.last_build_all

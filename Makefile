@@ -40,6 +40,7 @@ LIB_NAMES := es6-promise \
 	node
 
 SOURCES := $(patsubst %, ./lib/%.ts, $(SOURCE_NAMES))
+DECLARES := $(patsubst %, ./lib/%.d.ts, $(SOURCE_NAMES))
 TESTS := $(patsubst %, ./test/%.ts, $(TEST_NAMES))
 LIBS := $(foreach LIB, $(LIB_NAMES), ./lib.d/$(LIB)/$(LIB).d.ts)
 JS := $(patsubst %.ts, %.js, $(SOURCES) $(TESTS))
@@ -52,7 +53,7 @@ LAST_BUILD := ./.last_build
 build: $(LAST_BUILD)
 
 $(LAST_BUILD): $(SOURCES)
-	$(CC) $(FLAGS) $? $(LIBS)
+	$(CC) $(FLAGS) -d $? $(LIBS)
 	@touch $@
 
 all: $(LAST_BUILD_ALL)
@@ -65,5 +66,5 @@ lint: $(SOURCES) $(TESTS)
 	$(LINT) $(LINT_FLAGS) $^
 
 clean:
-	rm -f $(JS)
+	rm -f $(JS) $(DECLARES)
 	@rm -f $(LAST_BUILD_ALL) $(LAST_BUILD)
