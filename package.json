@@ -18,16 +18,14 @@
   },
   "main": "./lib/future.js",
   "devDependencies": {
-    "gulp": "latest",
-    "gulp-istanbul": "latest",
-    "gulp-mocha": "latest",
-    "gulp-tslint": "latest",
-    "gulp-typescript": "latest",
+    "istanbul": "latest",
+    "mocha": "latest",
+    "tslint": "latest",
     "typescript": "latest"
   },
   "scripts": {
-    "test": "gulp",
-    "prepublish": "gulp build"
+    "test": "make lint && make cover",
+    "prepublish": "make build"
   },
   "license": "MIT",
   "keywords": [ "future", "promise", "scala", "control flow", "concurrency" ]
