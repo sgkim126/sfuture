@@ -57,6 +57,7 @@ LAST_BUILD := ./.last_build
 COVERAGE_RESULT := ./coverage/coverage-final.json
 
 .PHONY: lint build all clean test cover modules
+.DEFAULT: build
 
 build: modules $(LAST_BUILD)
 
