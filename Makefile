@@ -1,4 +1,5 @@
-PATH := $(shell pwd)/node_modules/.bin:$(PATH)
+NODE_MODULES_PATH := $(shell pwd)/node_modules
+PATH := $(NODE_MODULES_PATH)/.bin:$(PATH)
 
 LINT := tslint
 LINT_FLAGS := --config ./.tslintrc.json
@@ -55,27 +56,29 @@ LAST_BUILD_ALL := ./.last_build_all
 LAST_BUILD := ./.last_build
 COVERAGE_RESULT := ./coverage/coverage-final.json
 
-.PHONY: lint build all clean test cover
+.PHONY: lint build all clean test cover modules
 
-build: $(LAST_BUILD)
+build: modules $(LAST_BUILD)
 
 $(LAST_BUILD): $(SOURCES)
 	$(CC) $(FLAGS) -d $? $(LIBS)
 	@touch $@
 
-all: $(LAST_BUILD_ALL)
+all: modules $(LAST_BUILD_ALL)
 
 $(LAST_BUILD_ALL): $(SOURCES) $(TESTS)
 	$(CC) $(FLAGS) $? $(LIBS)
 	@touch $@
 
-lint: $(SOURCES) $(TESTS)
+lint: modules lint-internal
+
+lint-internal: $(SOURCES) $(TESTS)
 	$(LINT) $(LINT_FLAGS) $^
 
-test: $(LAST_BUILD_ALL)
+test: modules $(LAST_BUILD_ALL)
 	$(TESTER) $(TEST_FLAGS)
 
-cover: $(COVERAGE_RESULT)
+cover: modules $(COVERAGE_RESULT)
 	$(COVER) check-coverage $(COVER_FLAGS)
 
 $(COVERAGE_RESULT): $(LAST_BUILD_ALL)
@@ -84,3 +87,8 @@ $(COVERAGE_RESULT): $(LAST_BUILD_ALL)
 clean:
 	rm -f $(JS) $(DECLARES)
 	@rm -f $(LAST_BUILD_ALL) $(LAST_BUILD)
+
+modules: $(NODE_MODULES_PATH)
+
+$(NODE_MODULES_PATH):
+	npm install
