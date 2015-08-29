@@ -18,9 +18,6 @@
   },
   "main": "./lib/future.js",
   "devDependencies": {
-    "gulp": "latest",
-    "gulp-istanbul": "latest",
-    "gulp-mocha": "latest",
     "istanbul": "latest",
     "mocha": "latest",
     "tslint": "latest",
