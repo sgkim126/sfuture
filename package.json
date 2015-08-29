@@ -21,12 +21,13 @@
     "gulp": "latest",
     "gulp-istanbul": "latest",
     "gulp-mocha": "latest",
+    "istanbul": "latest",
     "mocha": "latest",
     "tslint": "latest",
     "typescript": "latest"
   },
   "scripts": {
-    "test": "make lint && make all && gulp",
+    "test": "make lint && make cover",
     "prepublish": "make build"
   },
   "license": "MIT",
