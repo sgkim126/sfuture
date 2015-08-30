@@ -160,9 +160,7 @@ class Future<T> {
 
   transform<U>(s: (result?: T) => U, f: (err?: any) => any): Future<U> {
     let newPromise = this.promise.then(
-      (result: T) => {
-        return s(result);
-      },
+      s,
       (err: any) => {
         throw f(err);
       }
@@ -171,12 +169,7 @@ class Future<T> {
   }
 
   map<U>(mapping: (result?: T) => U): Future<U> {
-    let newPromise = this.promise.then(
-      (value: T) => {
-        return mapping(value);
-      }
-    );
-
+    let newPromise = this.promise.then(mapping);
     return new Future<U>(newPromise);
   }
 
@@ -221,11 +214,7 @@ class Future<T> {
   }
 
   recover(recoverFunction: (err?: any) => T): Future<T> {
-    let newPromise = this.promise.catch(
-      (err: any) => {
-        return recoverFunction(err);
-      }
-    );
+    let newPromise = this.promise.catch(recoverFunction);
 
     return new Future<T>(newPromise);
   }
@@ -246,9 +235,8 @@ class Future<T> {
 
   fallbackTo(future: Future<T>): Future<T> {
     let newPromise = new Promise<T>((resolve, reject) => {
-      this.onSuccess((result: T) => {
-        resolve(result);
-      }).onFailure((err: any) => {
+      this.onSuccess(resolve)
+      .onFailure((err: any) => {
         future.transform(resolve, reject);
       });
     });
