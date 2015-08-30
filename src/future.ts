@@ -27,9 +27,9 @@ class Future<T> {
 
 
   static apply<T>(fn: () => T): Future<T> {
-    let newPromise = new Promise<T>((resolve, reject) => {
+    let newPromise = new Promise<T>((resolve, reject): void => {
       setTimeout(
-        () => {
+        (): void => {
           try  {
             let result = fn();
             resolve(result);
@@ -44,14 +44,14 @@ class Future<T> {
 
 
   static sequence<T>(futures: Future<T>[]): Future<T[]> {
-    let newPromise = Promise.all(futures.map((f) => {
+    let newPromise = Promise.all(futures.map((f): Promise<T> => {
       return f.promise;
     }));
     return new Future<T[]>(newPromise);
   }
 
   static firstCompletedOf<T>(futures: Future<T>[]): Future<T> {
-    let newPromise = Promise.race(futures.map((f) => {
+    let newPromise = Promise.race(futures.map((f): Promise<T> => {
       return f.promise;
     }));
     return new Future<T>(newPromise);
@@ -84,7 +84,7 @@ class Future<T> {
         }
       };
 
-      futures.map((future: Future<T>) => {
+      futures.map((future: Future<T>): void => {
         future.onComplete(search);
       });
     });
@@ -94,7 +94,7 @@ class Future<T> {
 
   static fold<T, R>(futures: Future<T>[], base: R, op: (base: R, result: T) => R): Future<R> {
     return Future.sequence(futures)
-    .map((results: T[]) => {
+    .map((results: T[]): R => {
       return results.reduce(op, base);
     });
   }
@@ -105,7 +105,7 @@ class Future<T> {
     }
 
     return Future.sequence(futures)
-    .map((results: T[]) => {
+    .map((results: T[]): T => {
       let remains = results.slice(0);
       let first = remains.shift();
 
@@ -118,8 +118,8 @@ class Future<T> {
   }
 
   static denodify<T>(fn: Function, thisArg: any, ...args: any[]): Future<T> {
-    let newPromise = new Promise<T>((resolve, reject) => {
-      args.push((err: any, result: T) => {
+    let newPromise = new Promise<T>((resolve, reject): void => {
+      args.push((err: any, result: T): void => {
         if (err) {
           reject(err);
           return;
@@ -133,19 +133,19 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  onSuccess(callback: (result?: T) => void) {
+  onSuccess(callback: (result?: T) => void): Future<T> {
     this.promise.then(callback);
     return this;
   }
 
-  onFailure(callback: (err?: any) => void) {
+  onFailure(callback: (err?: any) => void): Future<T> {
     this.promise.catch(callback);
     return this;
   }
 
-  onComplete(callback: (err?: any, result?: T) => void) {
+  onComplete(callback: (err?: any, result?: T) => void): Future<T> {
     this.promise.then(
-      (value: T) => {
+      (value: T): void => {
         callback(undefined, value);
       },
       callback
@@ -161,7 +161,7 @@ class Future<T> {
   transform<U>(s: (result?: T) => U, f: (err?: any) => any): Future<U> {
     let newPromise = this.promise.then(
       s,
-      (err: any) => {
+      (err: any): U => {
         throw f(err);
       }
     );
@@ -175,7 +175,7 @@ class Future<T> {
 
   flatMap<U>(futuredMapping: (result?: T) => Future<U>): Future<U> {
     let newPromise = this.promise.then(
-      (value: T) => {
+      (value: T): Promise<U> => {
         return futuredMapping(value)
         .promise;
       }
@@ -186,7 +186,7 @@ class Future<T> {
 
   filter(filterFunction: (result?: T) => boolean): Future<T> {
     let newPromise = this.promise.then(
-      (value: T) => {
+      (value: T): T => {
         if (!filterFunction(value)) {
           throw new Error('no.such.element');
         }
@@ -221,7 +221,7 @@ class Future<T> {
 
   recoverWith(recoverFunction: (err?: any) => Future<T>): Future<T> {
     let newPromise = this.promise.catch(
-      (err: any) => {
+      (err: any): Promise<T> => {
         return recoverFunction(err).promise;
       }
     );
@@ -234,11 +234,11 @@ class Future<T> {
   }
 
   fallbackTo(future: Future<T>): Future<T> {
-    let newPromise = new Promise<T>((resolve, reject) => {
+    let newPromise = new Promise<T>((resolve, reject): void => {
       this.onSuccess(resolve)
-      .onFailure((err: any) => {
+      .onFailure((err: any): void => {
         future.onSuccess(resolve)
-        .onFailure((_: any) => {
+        .onFailure((_: any): void => {
           reject(err);
         });
       });
@@ -247,9 +247,9 @@ class Future<T> {
     return new Future<T>(newPromise);
   }
 
-  andThen(callback: (err?: any, result?: T) => void) {
+  andThen(callback: (err?: any, result?: T) => void): Future<T> {
     let newPromise = this.promise.then(
-      (value: T) => {
+      (value: T): T => {
         try {
           callback(undefined, value);
         } catch (ex) {
@@ -257,7 +257,7 @@ class Future<T> {
         }
         return value;
       },
-      (err: any) => {
+      (err: any): void => {
         try {
           callback(err);
         } catch (ex) {
@@ -271,9 +271,9 @@ class Future<T> {
   }
 
 
-  nodify(callback: (err?: any, result?: T) => void) {
+  nodify(callback: (err?: any, result?: T) => void): void {
     this.promise.then(
-      (value: T) => {
+      (value: T): void => {
         callback(undefined, value);
       },
       callback
