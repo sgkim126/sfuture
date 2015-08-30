@@ -23,13 +23,13 @@ describe('#fallbackTo', () => {
     });
   });
 
-  it('returns failed future if the given fails.', (done: MochaDone) => {
+  it('returns failed future with the reason of this future not the given future.', (done: MochaDone) => {
     let future1 = Future.failed(new Error('a'));
     let future2 = Future.failed(new Error('b'));
     let future3 = future1.fallbackTo(future2);
 
     should.fail(future3, done, (err) => {
-      assert.equal(err.message, 'b');
+      assert.equal(err.message, 'a');
     });
   });
 

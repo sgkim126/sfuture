@@ -237,7 +237,10 @@ class Future<T> {
     let newPromise = new Promise<T>((resolve, reject) => {
       this.onSuccess(resolve)
       .onFailure((err: any) => {
-        future.transform(resolve, reject);
+        future.onSuccess(resolve)
+        .onFailure((_: any) => {
+          reject(err);
+        });
       });
     });
 
