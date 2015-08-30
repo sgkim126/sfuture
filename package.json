@@ -27,6 +27,10 @@
     "test": "make lint && make cover",
     "prepublish": "make build"
   },
+  "engines": {
+    "iojs": ">=1.0.0",
+    "node": ">=0.12"
+  },
   "license": "MIT",
   "keywords": [ "future", "promise", "scala", "control flow", "concurrency" ]
 }
