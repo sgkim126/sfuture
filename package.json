@@ -1,6 +1,6 @@
 {
   "name": "sfuture",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript port of Scala Future",
   "author": "Seulgi Kim <dev@seulgi.kim>",
   "contributors": [
