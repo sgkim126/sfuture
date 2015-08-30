@@ -1,5 +1,6 @@
 NODE_MODULES_PATH := $(shell pwd)/node_modules
 PATH := $(NODE_MODULES_PATH)/.bin:$(PATH)
+SHELL := /bin/bash
 
 LINT := tslint
 LINT_FLAGS := --config ./.tslintrc.json
