@@ -54,3 +54,26 @@ Currently, sfuture ensures 100% test coverage.
 ```
 make cover
 ```
+
+## Changelogs
+### 2015 Jul 05, 2015 - 1.0.0
+- Fix a bug on find function.
+- Use es6 promise instead of mpromise.
+- Any type can be reject reason.
+### 2015 Jun 29, 2015 - 0.6.0
+- Change the signature of transform method
+- Implement withFilter, fromTry, 
+- Rename create to apply
+### 2015 Jun 28, 2015 - 0.5.0
+- Implement find, zip, recoverWith, foreach and fallbackTo
+### 2015 Jun 20, 2015 - 0.4.0
+- Implement firstCompletedOf, fold, reduce, traverse, and collect.
+### 2015 Jun 20, 2015 - 0.3.2
+- Publish only the compiled files
+### 2015 Jun 07, 2015 - 0.3.1
+- Change Future.sequence() signature to take an array of futures instead of rest parameters
+### 2015 Jun 03, 2015 - 0.2.0
+- Change onComplete method to use node style callback
+### 2015 Jun 01, 2015 - 0.1.0
+### 2015 May 27, 2015 - 0.0.4
+- Implement some of methods
