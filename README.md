@@ -60,20 +60,29 @@ make cover
 - Fix a bug on find function.
 - Use es6 promise instead of mpromise.
 - Any type can be reject reason.
+
 ### Jun 29, 2015 - 0.6.0
 - Change the signature of transform method
 - Implement withFilter, fromTry, 
 - Rename create to apply
+
 ### Jun 28, 2015 - 0.5.0
 - Implement find, zip, recoverWith, foreach and fallbackTo
+
 ### Jun 20, 2015 - 0.4.0
 - Implement firstCompletedOf, fold, reduce, traverse, and collect.
+
 ### Jun 20, 2015 - 0.3.2
 - Publish only the compiled files
+
 ### Jun 07, 2015 - 0.3.1
 - Change Future.sequence() signature to take an array of futures instead of rest parameters
+
 ### Jun 03, 2015 - 0.2.0
 - Change onComplete method to use node style callback
+
 ### Jun 01, 2015 - 0.1.0
+- Change onComplete signature
+
 ### May 27, 2015 - 0.0.4
 - Implement some of methods
