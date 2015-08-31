@@ -1,5 +1,5 @@
 import assert = require('assert');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#onFailure', () => {
   it('registers a failure callback.', (done: MochaDone) => {

@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#filter', () => {
   it('filter returns the same error when it is already failed.', <T>(done: MochaDone) => {

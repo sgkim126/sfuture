@@ -1,6 +1,6 @@
 import assert = require('assert');
 import util = require('util');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 function defaultSucceed<T>(value?: T) {
   return;

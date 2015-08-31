@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#map', () => {
   it('maps the result of a Future into another result.', (done: MochaDone) => {

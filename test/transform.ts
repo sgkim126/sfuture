@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#transform', () => {
   it('transformed future of successful future becomes successful future', (done: MochaDone) => {

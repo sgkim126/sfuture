@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#fold', () => {
   it('returns successful future that holds base when the argument is an empty array', (done: MochaDone) => {

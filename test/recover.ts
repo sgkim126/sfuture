@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#recover', () => {
   it('recover returns the same result with successful future.', (done: MochaDone) => {

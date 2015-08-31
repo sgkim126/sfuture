@@ -5,9 +5,8 @@
 /coverage/
 /Makefile
 /lib.d/
-/lib/**/*.ts
-!/lib/**/*.d.ts
-/lib/interface/
+/src/**/*.ts
+!/src/**/*.d.ts
 /node_modules/
 /test/
 

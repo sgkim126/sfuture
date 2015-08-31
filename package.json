@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/sgkim126/sfuture/issues"
   },
-  "main": "./lib/future.js",
+  "main": "./src/future.js",
   "devDependencies": {
     "istanbul": "latest",
     "mocha": "latest",

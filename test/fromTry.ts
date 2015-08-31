@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#fromTry', () => {
   it('creates an already completed successful future if error is not given.', (done: MochaDone) => {

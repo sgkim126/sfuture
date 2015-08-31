@@ -1,5 +1,5 @@
 import assert = require('assert');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#foreach', () => {
   it('foreach calls when successful.', (done: MochaDone) => {

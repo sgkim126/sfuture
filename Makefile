@@ -47,8 +47,8 @@ LIB_NAMES := es6-promise \
 	mocha \
 	node
 
-SOURCES := $(patsubst %, ./lib/%.ts, $(SOURCE_NAMES))
-DECLARES := $(patsubst %, ./lib/%.d.ts, $(SOURCE_NAMES))
+SOURCES := $(patsubst %, ./src/%.ts, $(SOURCE_NAMES))
+DECLARES := $(patsubst %, ./src/%.d.ts, $(SOURCE_NAMES))
 TESTS := $(patsubst %, ./test/%.ts, $(TEST_NAMES))
 LIBS := $(foreach LIB, $(LIB_NAMES), ./lib.d/$(LIB)/$(LIB).d.ts)
 JS := $(patsubst %.ts, %.js, $(SOURCES) $(TESTS))
