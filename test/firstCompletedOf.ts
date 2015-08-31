@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#firstCompletedOf', () => {
   it('firstCompletedOf returns failed future when firstCompletedOf takes only failed future.', (done: MochaDone) => {

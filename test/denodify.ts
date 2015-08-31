@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#denodifiy', () => {
   let addPositive = (lhs: number, rhs: number, callback: (err: Error, result?: number) => void) => {

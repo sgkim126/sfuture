@@ -1,5 +1,5 @@
 import assert = require('assert');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#nodify', () => {
   it('successful future calls callback with result', (done: MochaDone) => {

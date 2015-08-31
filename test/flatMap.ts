@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#flatMap', () => {
   it('maps the result of a Future into another futured result.', (done: MochaDone) => {

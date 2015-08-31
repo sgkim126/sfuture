@@ -5,11 +5,14 @@
 /coverage/
 /Makefile
 /lib.d/
-/lib/**/*.ts
-!/lib/**/*.d.ts
-/lib/interface/
+/src/**/*.ts
+!/src/**/*.d.ts
 /node_modules/
 /test/
 
 /.last_build
 /.last_build_all
+
+/docs
+/tsdoc.json
+/.last_doc_config

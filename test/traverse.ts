@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#traverse', () => {
   it('returns successful future on empty array', (done: MochaDone) => {

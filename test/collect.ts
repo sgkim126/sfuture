@@ -1,6 +1,6 @@
 import assert = require('assert');
 import should = require('./should');
-import Future = require('../lib/future');
+import Future = require('../src/future');
 
 describe('#collect', () => {
   it('returns the result that partial function is applied.', (done: MochaDone) => {

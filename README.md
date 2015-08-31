@@ -28,7 +28,7 @@ cd {version}
 ```
 make
 ```
-Now you have ```{path to sfuture}/lib/sfuture.js```. Use it.
+Now you have ```{path to sfuture}/src/sfuture.js```. Use it.
 
 ## How to contribute
 sfuture is written with TypeScript, checks style with tslint, runs tests with mocha and checks test coverage with istanbul. ```npm test``` command tests them all.
@@ -53,6 +53,11 @@ make test
 Currently, sfuture ensures 100% test coverage.
 ```
 make cover
+```
+
+### How to generate document
+```
+make doc
 ```
 
 ## Changelogs
