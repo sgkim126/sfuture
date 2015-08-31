@@ -19,7 +19,9 @@
   "main": "./src/future.js",
   "devDependencies": {
     "istanbul": "latest",
+    "jsdoc": "latest",
     "mocha": "latest",
+    "tsdoc": ">=0.0.3",
     "tslint": "latest",
     "typescript": "latest"
   },
