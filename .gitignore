@@ -32,3 +32,8 @@ node_modules
 
 /.last_build
 /.last_build_all
+
+# Document
+/docs/
+/tsdoc.json
+/.last_doc_config

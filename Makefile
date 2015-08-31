@@ -14,6 +14,8 @@ TEST_FLAGS := --reporter spec --timeout 1000 --ui bdd
 COVER := istanbul
 COVER_FLAGS := --statements 100 --functions 100 --branches 100 --lines 100
 
+DOC := tsdoc
+
 SOURCE_NAMES := future
 TEST_NAMES := andThen \
     apply \
@@ -56,8 +58,11 @@ JS := $(patsubst %.ts, %.js, $(SOURCES) $(TESTS))
 LAST_BUILD_ALL := ./.last_build_all
 LAST_BUILD := ./.last_build
 COVERAGE_RESULT := ./coverage/coverage-final.json
+DOC_CONFIG := ./tsdoc.json
+DOC_RESULT := ./docs/index.html
+LAST_DOC_CONFIG := ./.last_doc_config
 
-.PHONY: lint build all clean test cover modules
+.PHONY: lint build all clean test cover modules doc
 .DEFAULT: build
 
 build: modules $(LAST_BUILD)
@@ -86,9 +91,18 @@ cover: modules $(COVERAGE_RESULT)
 $(COVERAGE_RESULT): $(LAST_BUILD_ALL)
 	$(COVER) cover $(TESTER) -- $(TEST_FLAGS)
 
+doc: modules $(LAST_DOC_CONFIG) $(DOC_RESULT)
+
+$(LAST_DOC_CONFIG): $(DOC_CONFIG)
+	$(DOC) -i
+	@touch $@
+
+$(DOC_RESULT): $(SOURCES)
+	$(DOC)
+
 clean:
 	rm -f $(JS) $(DECLARES)
-	@rm -f $(LAST_BUILD_ALL) $(LAST_BUILD)
+	@rm -f $(LAST_BUILD_ALL) $(LAST_BUILD) $(LAST_DOC_CONFIG)
 
 modules: $(NODE_MODULES_PATH)
 

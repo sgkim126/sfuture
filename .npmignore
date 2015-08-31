@@ -12,3 +12,7 @@
 
 /.last_build
 /.last_build_all
+
+/docs
+/tsdoc.json
+/.last_doc_config
