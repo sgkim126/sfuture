@@ -55,6 +55,11 @@ Currently, sfuture ensures 100% test coverage.
 make cover
 ```
 
+### How to generate document
+```
+make doc
+```
+
 ## Changelogs
 ### Jul 05, 2015 - 1.0.0
 - Fix a bug on find function.
