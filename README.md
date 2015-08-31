@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/sgkim126/sfuture.svg?branch=master)](https://travis-ci.org/sgkim126/sfuture)
 
 JavaScript port of Scala Future written with TypeScript.
+See [documentation](http://sgkim126.github.io/sfuture/index.html) for more information.
 
 ## Compatibility
 This library uses [ES6 promise](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Promise). So you need modern browser, io.js. If you want to use it with node.js, please ensure your node.js version is upper than 0.12.0. See [ES6 compatibility table](https://kangax.github.io/compat-table/es6/#Promies) for more information.
